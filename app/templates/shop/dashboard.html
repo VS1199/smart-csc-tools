@@ -1,92 +1,108 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="dashboard-header">
-    <h2>{{ shop.shop_name }} <span class="badge badge-success">{{ shop.shop_code }}</span></h2>
-    <p>Owner: {{ shop.owner_name }} | Contact: {{ shop.phone }} | {{ shop.address }}</p>
-</div>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pro_theme.css') }}">
 
-<div class="stats-grid">
-    <div class="stat-card">
-        <h3>₹{{ "%.2f"|format(total_income) }}</h3>
-        <p>Total Revenue</p>
-    </div>
-    <div class="stat-card danger">
-        <h3>₹{{ "%.2f"|format(total_expense) }}</h3>
-        <p>Total Expenses</p>
-    </div>
-    <div class="stat-card success">
-        <h3>₹{{ "%.2f"|format(net_profit) }}</h3>
-        <p>Net Profit</p>
-    </div>
-    <div class="stat-card">
-        <h3>{{ customers_count }}</h3>
-        <p>Registered Customers</p>
-    </div>
-    <div class="stat-card warning">
-        <h3>{{ pending_prints }}</h3>
-        <p>Pending Print Orders</p>
-    </div>
-</div>
-
-<div class="center-quick-actions" style="margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
-    <a href="/shop/billing/create" class="btn-primary">+ Create Bill / Receipt</a>
-    <a href="/shop/expenses" class="btn-primary" style="background: #ef4444;">- Add Expense</a>
-    <a href="/shop/print-queue" class="btn-primary" style="background: #8b5cf6;">🖨️ View Print Queue ({{ pending_prints }})</a>
-    <a href="/shop/customers" class="btn-primary" style="background: #059669;">Manage Customers</a>
-    <a href="/shop/services" class="btn-primary" style="background: #475569;">Services & Rates</a>
-    <a href="/shop/reports" class="btn-primary" style="background: #0284c7;">📊 P&L & Reports</a>
-</div>
-
-<div class="table-container" style="margin-bottom: 2rem; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; justify-content: space-between; align-items: center;">
+<div class="container-fluid py-4 px-md-4">
+  
+  <!-- Counter Top Alert / Quick Banner -->
+  <div class="pro-hero-banner">
     <div>
-        <h3 style="color: #1e40af; margin-bottom: 0.25rem;">📱 Counter Self-Service Print QR</h3>
-        <p style="color: #1e3a8a; font-size: 0.9rem;">Customer upload link: <code>http://127.0.0.1:5000/print/{{ shop.shop_code }}</code></p>
+      <span class="badge" style="background: var(--badge-bg); color: var(--titanium-gold); border: 1px solid rgba(229,184,135,0.3); border-radius: 9999px; padding: 5px 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Live Counter Ready</span>
+      <h3 class="mt-2 mb-1" style="font-weight: 700; color: #fff;">Smart Pragya Counter Desk</h3>
+      <p class="mb-0" style="color: var(--titanium-slate); font-size: 0.9rem;">Customer QR scans and wireless printing queue are active.</p>
     </div>
     <div>
-        <a href="/print/{{ shop.shop_code }}" target="_blank" class="btn-primary" style="background: #2563eb;">Test Customer Upload</a>
+      <a href="{{ url_for('shop.counter_qr') if 'counter_qr' in shop_endpoints else '#' }}" class="pro-btn-gold">
+        <i class="bi bi-qr-code"></i> Show Counter QR
+      </a>
     </div>
-</div>
+  </div>
 
-<div class="table-container">
-    <h3 style="margin-bottom: 1rem;">Recent Billing Transactions</h3>
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Receipt No</th>
-                <th>Service</th>
-                <th>Amount</th>
-                <th>Payment Mode</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for t in recent_txns %}
-            <tr>
-                <td><strong>{{ t.receipt_no }}</strong></td>
-                <td>{{ t.service_type }}</td>
-                <td style="font-weight: 600; color: {{ '#15803d' if t.txn_type == 'INCOME' else '#b91c1c' }};">
-                    {{ '+' if t.txn_type == 'INCOME' else '-' }}₹{{ "%.2f"|format(t.amount) }}
-                </td>
-                <td><span class="badge badge-warning">{{ t.payment_mode }}</span></td>
-                <td><span class="badge badge-success">{{ t.payment_status }}</span></td>
-                <td>{{ t.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
-                <td>
-                    {% if t.txn_type == 'INCOME' %}
-                        <a href="/shop/receipt/{{ t.receipt_no }}" class="action-btn approve" target="_blank">Print</a>
-                    {% else %}
-                        <span style="font-size: 0.8rem; color: #64748b;">Expense</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="7" style="text-align: center; color: #64748b;">No bills generated yet.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+  <!-- Key Metrics Row -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <div class="pro-stat-card">
+        <span style="font-size: 0.8rem; color: var(--titanium-slate); text-transform: uppercase;">Today's Revenue</span>
+        <h3 class="mt-2 mb-0" style="color: var(--titanium-gold); font-weight: 700;">₹ {{ today_revenue|default('0.00') }}</h3>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="pro-stat-card">
+        <span style="font-size: 0.8rem; color: var(--titanium-slate); text-transform: uppercase;">Pending Print Orders</span>
+        <h3 class="mt-2 mb-0" style="font-weight: 700;">{{ pending_prints|default('0') }}</h3>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="pro-stat-card">
+        <span style="font-size: 0.8rem; color: var(--titanium-slate); text-transform: uppercase;">Total Customers Today</span>
+        <h3 class="mt-2 mb-0" style="font-weight: 700;">{{ today_customers|default('0') }}</h3>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="pro-stat-card">
+        <span style="font-size: 0.8rem; color: var(--titanium-slate); text-transform: uppercase;">Expenses</span>
+        <h3 class="mt-2 mb-0" style="color: #f87171; font-weight: 700;">₹ {{ today_expense|default('0.00') }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paytm Style Services Grid -->
+  <div class="card p-4 mb-4" style="background: var(--pro-card); border: 1px solid var(--pro-card-border); border-radius: var(--radius-card);">
+    <h5 class="mb-3" style="font-weight: 600; color: #fff;">Counter Services & Quick Actions</h5>
+    <div class="paytm-grid">
+      
+      <a href="/shop/print-queue" class="squircle-action">
+        <div class="squircle-icon-wrap" style="color: var(--titanium-gold);">
+          <i class="bi bi-printer"></i>
+        </div>
+        <span class="squircle-label">Wireless Print</span>
+      </a>
+
+      <a href="/shop/billing/new" class="squircle-action">
+        <div class="squircle-icon-wrap" style="color: #38bdf8;">
+          <i class="bi bi-receipt"></i>
+        </div>
+        <span class="squircle-label">Instant Bill</span>
+      </a>
+
+      <a href="/shop/tools/photo-crop" class="squircle-action">
+        <div class="squircle-icon-wrap" style="color: #a78bfa;">
+          <i class="bi bi-person-bounding-box"></i>
+        </div>
+        <span class="squircle-label">Passport Photo</span>
+      </a>
+
+      <a href="/shop/tools/aadhaar-mask" class="squircle-action">
+        <div class="squircle-icon-wrap" style="color: #4ade80;">
+          <i class="bi bi-shield-lock"></i>
+        </div>
+        <span class="squircle-label">Aadhaar Tool</span>
+      </a>
+
+      <a href="/shop/services/pan" class="squircle-action">
+        <div class="squircle-icon-wrap" style="color: #f472b6;">
+          <i class="bi bi-card-heading"></i>
+        </div>
+        <span class="squircle-label">PAN Card</span>
+      </a>
+
+      <a href="/shop/expenses/add" class="squircle-action">
+        <div class="squircle-icon-wrap" style="color: #fb923c;">
+          <i class="bi bi-wallet2"></i>
+        </div>
+        <span class="squircle-label">Add Expense</span>
+      </a>
+
+      <a href="/shop/customers" class="squircle-action">
+        <div class="squircle-icon-wrap" style="color: #94a3b8;">
+          <i class="bi bi-people"></i>
+        </div>
+        <span class="squircle-label">Khata Register</span>
+      </a>
+
+    </div>
+  </div>
+
 </div>
 {% endblock %}
