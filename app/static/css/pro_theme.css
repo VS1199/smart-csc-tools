@@ -1,142 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
 :root {
-  /* iPhone Pro Titanium Palette */
-  --pro-bg: #0b0f19;
-  --pro-surface: #111827;
-  --pro-card: rgba(23, 31, 48, 0.7);
-  --pro-card-border: rgba(255, 255, 255, 0.08);
-  --pro-card-hover: rgba(33, 45, 69, 0.9);
+  --bg-deep: #070913;
+  --glass-card: rgba(18, 24, 43, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-hover: rgba(26, 35, 64, 0.75);
   
-  --titanium-gold: #e5b887;
-  --titanium-sand: #d4a373;
-  --titanium-slate: #94a3b8;
-  --titanium-bright: #f8fafc;
+  --glow-blue: #38bdf8;
+  --glow-purple: #818cf8;
+  --glow-gold: #f59e0b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
   
-  --accent-glow: rgba(229, 184, 135, 0.15);
-  --badge-bg: rgba(229, 184, 135, 0.12);
-  
-  --radius-card: 20px;
-  --radius-squircle: 16px;
   --radius-pill: 9999px;
+  --radius-card: 24px;
 }
 
 body.pro-theme {
-  background: radial-gradient(circle at 50% 0%, #17223b 0%, #0b0f19 75%);
-  color: var(--titanium-bright);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", sans-serif;
+  background-color: var(--bg-deep);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.18) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(217, 119, 6, 0.15) 0px, transparent 40%),
+    radial-gradient(at 50% 50%, rgba(56, 189, 248, 0.1) 0px, transparent 60%),
+    radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-main);
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
   min-height: 100vh;
   margin: 0;
 }
 
-/* Glass Header */
+/* Glass Navbar */
 .pro-navbar {
-  background: rgba(11, 15, 25, 0.8);
+  background: rgba(10, 14, 26, 0.65) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Frosted Floating Glass Card */
+.glass-panel {
+  background: var(--glass-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--pro-card-border);
-  padding: 0.9rem 1.5rem;
-}
-
-/* Stats Pill Cards */
-.pro-stat-card {
-  background: var(--pro-card);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--pro-card-border);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-card);
-  padding: 1.25rem 1.5rem;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.pro-stat-card:hover {
-  border-color: rgba(229, 184, 135, 0.3);
-  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Paytm Style Quick Action Grid */
-.paytm-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 1rem;
-}
-
-.squircle-action {
-  background: var(--pro-card);
-  border: 1px solid var(--pro-card-border);
-  border-radius: var(--radius-card);
-  padding: 1.25rem 0.75rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  color: var(--titanium-bright);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  text-align: center;
-}
-
-.squircle-action:hover {
-  background: var(--pro-card-hover);
-  border-color: var(--titanium-gold);
+.glass-panel:hover {
+  background: var(--glass-hover);
+  border-color: rgba(255, 255, 255, 0.25);
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px -6px var(--accent-glow);
-  color: #fff;
 }
 
-.squircle-icon-wrap {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-squircle);
-  background: linear-gradient(135deg, rgba(229, 184, 135, 0.15), rgba(255, 255, 255, 0.03));
-  border: 1px solid rgba(229, 184, 135, 0.25);
+/* 3D Glowing Action Cards (What We Do Style) */
+.glass-service-card {
+  background: var(--glass-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 22px;
+  padding: 1.75rem 1.25rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s ease;
+  text-decoration: none;
+  display: block;
+}
+
+.glass-service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+}
+
+.glass-service-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(129, 140, 248, 0.4);
+  box-shadow: 0 16px 32px -8px rgba(99, 102, 241, 0.25);
+}
+
+/* Glowing Icon 3D Box */
+.icon-box-3d {
+  width: 74px;
+  height: 74px;
+  margin: 0 auto 1.25rem;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  margin-bottom: 0.75rem;
-  transition: transform 0.2s ease;
+  font-size: 2rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease;
 }
 
-.squircle-action:hover .squircle-icon-wrap {
-  transform: scale(1.08);
-  background: linear-gradient(135deg, rgba(229, 184, 135, 0.3), rgba(229, 184, 135, 0.08));
+.glass-service-card:hover .icon-box-3d {
+  transform: scale(1.1) rotate(2deg);
 }
 
-.squircle-label {
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: var(--titanium-slate);
-}
-
-.squircle-action:hover .squircle-label {
-  color: var(--titanium-bright);
-}
-
-/* Paytm Horizontal Hero / Banner Card */
-.pro-hero-banner {
-  background: linear-gradient(135deg, rgba(30, 41, 67, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
-  border: 1px solid var(--pro-card-border);
-  border-radius: var(--radius-card);
-  padding: 1.5rem 2rem;
+/* Glass Capsule Search Bar */
+.search-capsule {
+  background: rgba(22, 30, 52, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  padding: 6px 10px 6px 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.75rem;
+  max-width: 620px;
+  margin: 2rem auto;
+  box-shadow: 0 12px 30px -10px rgba(0,0,0,0.5);
 }
 
-.pro-btn-gold {
-  background: linear-gradient(135deg, #e5b887, #c68a4c);
-  color: #0b0f19;
-  font-weight: 600;
+.search-capsule input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+.search-capsule input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Glowing Capsule Buttons */
+.btn-pill-glow {
+  background: #ffffff;
+  color: #070913;
+  font-weight: 700;
   border-radius: var(--radius-pill);
-  padding: 0.6rem 1.4rem;
+  padding: 0.65rem 1.6rem;
   border: none;
   text-decoration: none;
-  font-size: 0.9rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  transition: opacity 0.2s;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
 }
 
-.pro-btn-gold:hover {
-  opacity: 0.9;
+.btn-pill-glow:hover {
+  background: #f1f5f9;
+  transform: scale(1.03);
+  box-shadow: 0 0 35px rgba(255, 255, 255, 0.35);
   color: #000;
 }
