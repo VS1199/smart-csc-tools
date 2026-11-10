@@ -2,11 +2,21 @@ import os
 from app import create_app, db
 from app.models.tenant import User, Shop
 from werkzeug.security import generate_password_hash
+from sqlalchemy import text
 
 app = create_app()
 
 with app.app_context():
     db.create_all()
+
+    # Safe column add agar table me shop_code miss ho
+    try:
+        db.session.execute(text("ALTER TABLE shops ADD COLUMN IF NOT EXISTS shop_code VARCHAR(50);"))
+        db.session.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;"))
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Column check notice: {e}")
 
     # Ensure Superadmin exists
     try:
