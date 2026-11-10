@@ -21,7 +21,6 @@ class Shop(db.Model):
     transactions = db.relationship('Transaction', backref='shop', cascade="all, delete-orphan", lazy=True)
     print_jobs = db.relationship('PrintJob', backref='shop', cascade="all, delete-orphan", lazy=True)
 
-# Compatibility alias
 Tenant = Shop
 
 class User(UserMixin, db.Model):
@@ -35,7 +34,6 @@ class User(UserMixin, db.Model):
     
     shop_id = db.Column(db.Integer, db.ForeignKey('shops.id'), nullable=True)
 
-    # Compatibility: tenant_id points directly to shop_id
     @property
     def tenant_id(self):
         return self.shop_id
@@ -96,5 +94,22 @@ class SiteSetting(db.Model):
     key = db.Column(db.String(50), unique=True, nullable=False)
     value = db.Column(db.String(255), nullable=True)
 
-# Compatibility alias
+    @classmethod
+    def get(cls, key, default=None):
+        try:
+            setting = cls.query.filter_by(key=key).first()
+            return setting.value if setting and setting.value is not None else default
+        except Exception:
+            return default
+
+    @classmethod
+    def set(cls, key, value):
+        setting = cls.query.filter_by(key=key).first()
+        if not setting:
+            setting = cls(key=key, value=value)
+            db.session.add(setting)
+        else:
+            setting.value = value
+        db.session.commit()
+
 Order = Transaction
