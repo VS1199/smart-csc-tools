@@ -1,0 +1,142 @@
+:root {
+  /* iPhone Pro Titanium Palette */
+  --pro-bg: #0b0f19;
+  --pro-surface: #111827;
+  --pro-card: rgba(23, 31, 48, 0.7);
+  --pro-card-border: rgba(255, 255, 255, 0.08);
+  --pro-card-hover: rgba(33, 45, 69, 0.9);
+  
+  --titanium-gold: #e5b887;
+  --titanium-sand: #d4a373;
+  --titanium-slate: #94a3b8;
+  --titanium-bright: #f8fafc;
+  
+  --accent-glow: rgba(229, 184, 135, 0.15);
+  --badge-bg: rgba(229, 184, 135, 0.12);
+  
+  --radius-card: 20px;
+  --radius-squircle: 16px;
+  --radius-pill: 9999px;
+}
+
+body.pro-theme {
+  background: radial-gradient(circle at 50% 0%, #17223b 0%, #0b0f19 75%);
+  color: var(--titanium-bright);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", sans-serif;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* Glass Header */
+.pro-navbar {
+  background: rgba(11, 15, 25, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--pro-card-border);
+  padding: 0.9rem 1.5rem;
+}
+
+/* Stats Pill Cards */
+.pro-stat-card {
+  background: var(--pro-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--pro-card-border);
+  border-radius: var(--radius-card);
+  padding: 1.25rem 1.5rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pro-stat-card:hover {
+  border-color: rgba(229, 184, 135, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Paytm Style Quick Action Grid */
+.paytm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 1rem;
+}
+
+.squircle-action {
+  background: var(--pro-card);
+  border: 1px solid var(--pro-card-border);
+  border-radius: var(--radius-card);
+  padding: 1.25rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--titanium-bright);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+}
+
+.squircle-action:hover {
+  background: var(--pro-card-hover);
+  border-color: var(--titanium-gold);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -6px var(--accent-glow);
+  color: #fff;
+}
+
+.squircle-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-squircle);
+  background: linear-gradient(135deg, rgba(229, 184, 135, 0.15), rgba(255, 255, 255, 0.03));
+  border: 1px solid rgba(229, 184, 135, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.squircle-action:hover .squircle-icon-wrap {
+  transform: scale(1.08);
+  background: linear-gradient(135deg, rgba(229, 184, 135, 0.3), rgba(229, 184, 135, 0.08));
+}
+
+.squircle-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--titanium-slate);
+}
+
+.squircle-action:hover .squircle-label {
+  color: var(--titanium-bright);
+}
+
+/* Paytm Horizontal Hero / Banner Card */
+.pro-hero-banner {
+  background: linear-gradient(135deg, rgba(30, 41, 67, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border: 1px solid var(--pro-card-border);
+  border-radius: var(--radius-card);
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+}
+
+.pro-btn-gold {
+  background: linear-gradient(135deg, #e5b887, #c68a4c);
+  color: #0b0f19;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  padding: 0.6rem 1.4rem;
+  border: none;
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s;
+}
+
+.pro-btn-gold:hover {
+  opacity: 0.9;
+  color: #000;
+}
