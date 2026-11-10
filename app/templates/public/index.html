@@ -1,109 +1,106 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-5">
-  
-  <!-- Hero Section -->
-  <div class="text-center pt-3 pb-4">
-    <span class="badge mb-3" style="background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); border-radius: 9999px; padding: 7px 18px; font-size: 0.8rem; letter-spacing: 1px; color: var(--text-muted);">
-      SMART • FAST • CLOUD PRAGYA
-    </span>
-    
-    <h1 style="font-size: clamp(2.4rem, 5.5vw, 4rem); font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 1rem;">
-      Ideas into Amazing <br>
-      <span style="background: linear-gradient(135deg, #fff 30%, #818cf8 70%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-        Pragya Kendra Tools.
-      </span>
+<!-- Ambient Glow Backdrops -->
+<div class="ai-background-canvas">
+  <div class="glow-orb-1"></div>
+  <div class="glow-orb-2"></div>
+</div>
+
+<div class="home-container">
+
+  <!-- AI Hero Header -->
+  <div class="ai-hero-wrap">
+    <div class="ai-status-pill">
+      <span class="ai-pulse-dot"></span>
+      <span>AI-Powered Pragya Operating System</span>
+    </div>
+
+    <h1 class="ai-hero-title">
+      Transforming CSC Into <br>
+      <span class="ai-gradient-text">Next-Gen Intelligent Hubs</span>
     </h1>
-    
-    <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 580px; margin: 0 auto;">
-      All-in-one smart counter platform: instant customer QR wireless printing, photo lab, billing, and CSC automation.
+
+    <p class="ai-hero-desc">
+      Eliminate queues, WhatsApp data chaos, and manual photo alignment. Wireless customer printing, AI framing, and instant digital invoicing.
     </p>
 
-    <!-- Glass Capsule Search Bar -->
-    <div class="search-capsule">
-      <i class="bi bi-search text-muted me-2"></i>
-      <input type="text" placeholder="Search services (e.g. Passport Photo, Fast Print, Billing)...">
-      <a href="/auth/register" class="btn-pill-glow" style="padding: 0.5rem 1.2rem; font-size: 0.85rem;">Get Started →</a>
+    <!-- AI Command Bar Launcher -->
+    <div class="ai-command-bar">
+      <i class="bi bi-cpu text-info me-3" style="font-size: 1.25rem;"></i>
+      <input type="text" placeholder="Type command (e.g. Passport 8-Photo, Print Queue, Aadhaar Tool)...">
+      <a href="/auth/register" class="btn-ai-launch">
+        Get Access <i class="bi bi-arrow-right"></i>
+      </a>
     </div>
   </div>
 
-  <!-- Services: What We Do (4-Column Glowing Glass Cards) -->
-  <div class="mt-5">
-    <div class="d-flex justify-content-between align-items-end mb-4">
-      <div>
-        <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: #818cf8; font-weight: 600;">COUNTER TOOLS</span>
-        <h2 style="font-size: 1.8rem; font-weight: 700; margin: 0;">What We Deliver</h2>
-      </div>
-      <a href="/shop/dashboard" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">View All Services →</a>
+  <!-- AI Service Grid -->
+  <div class="ai-section-title">
+    <div>
+      <span style="font-size: 0.8rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ai-cyan); font-weight: 700;">INTELLIGENT SUITE</span>
+      <h2 style="font-size: 2.2rem; font-weight: 800; margin: 0.3rem 0 0; font-family: 'Space Grotesk', sans-serif;">Autonomous Counter Tools</h2>
     </div>
-
-    <div class="row g-4">
-      <!-- Card 1 -->
-      <div class="col-6 col-lg-3">
-        <a href="/shop/print-queue" class="glass-service-card">
-          <div class="icon-box-3d" style="color: #38bdf8; text-shadow: 0 0 20px rgba(56, 189, 248, 0.6);">
-            <i class="bi bi-printer-fill"></i>
-          </div>
-          <h5 style="font-weight: 700; font-size: 1.1rem; color: #fff;">Cloud Printing</h5>
-          <p style="color: var(--text-muted); font-size: 0.82rem; margin: 0;">Customer QR scan print without WhatsApp or cable hassle.</p>
-        </a>
-      </div>
-
-      <!-- Card 2 -->
-      <div class="col-6 col-lg-3">
-        <a href="/shop/tools/photo-crop" class="glass-service-card">
-          <div class="icon-box-3d" style="color: #a855f7; text-shadow: 0 0 20px rgba(168, 85, 247, 0.6);">
-            <i class="bi bi-person-bounding-box"></i>
-          </div>
-          <h5 style="font-weight: 700; font-size: 1.1rem; color: #fff;">Photo Studio</h5>
-          <p style="color: var(--text-muted); font-size: 0.82rem; margin: 0;">Single-click passport maker with auto sheet alignment.</p>
-        </a>
-      </div>
-
-      <!-- Card 3 -->
-      <div class="col-6 col-lg-3">
-        <a href="/shop/billing/new" class="glass-service-card">
-          <div class="icon-box-3d" style="color: #f59e0b; text-shadow: 0 0 20px rgba(245, 158, 11, 0.6);">
-            <i class="bi bi-receipt-cutoff"></i>
-          </div>
-          <h5 style="font-weight: 700; font-size: 1.1rem; color: #fff;">Fast Invoicing</h5>
-          <p style="color: var(--text-muted); font-size: 0.82rem; margin: 0;">Thermal receipts, GST/Non-GST slips with SMS alerts.</p>
-        </a>
-      </div>
-
-      <!-- Card 4 -->
-      <div class="col-6 col-lg-3">
-        <a href="/shop/customers" class="glass-service-card">
-          <div class="icon-box-3d" style="color: #10b981; text-shadow: 0 0 20px rgba(16, 185, 129, 0.6);">
-            <i class="bi bi-journal-bookmark-fill"></i>
-          </div>
-          <h5 style="font-weight: 700; font-size: 1.1rem; color: #fff;">Khata Ledger</h5>
-          <p style="color: var(--text-muted); font-size: 0.82rem; margin: 0;">Customer dues, daily income & expense tracking records.</p>
-        </a>
-      </div>
-    </div>
+    <a href="/shop/dashboard" style="color: #94a3b8; text-decoration: none; font-size: 0.95rem; font-weight: 600;">
+      All Modules <i class="bi bi-arrow-up-right"></i>
+    </a>
   </div>
 
-  <!-- Bottom Floating Stats Bar -->
-  <div class="glass-panel mt-5 p-4">
-    <div class="row text-center g-3">
-      <div class="col-6 col-md-3">
-        <h3 style="font-weight: 800; font-size: 1.8rem; margin: 0; color: #38bdf8;">10,000+</h3>
-        <span style="font-size: 0.85rem; color: var(--text-muted);">Prints Processed</span>
+  <div class="ai-grid-4">
+    <!-- Card 1 -->
+    <a href="/shop/print-queue" class="ai-tool-card">
+      <div class="ai-icon-box" style="background: linear-gradient(135deg, rgba(6,182,212,0.3), rgba(6,182,212,0.05)); color: #06b6d4;">
+        <i class="bi bi-printer-fill"></i>
       </div>
-      <div class="col-6 col-md-3">
-        <h3 style="font-weight: 800; font-size: 1.8rem; margin: 0; color: #a855f7;">500+</h3>
-        <span style="font-size: 0.85rem; color: var(--text-muted);">Pragya Centers</span>
+      <h4>Zero-Cable Print Hub</h4>
+      <p>Customer scans desk QR, uploads PDF/images, and system auto-routes directly to printer queue.</p>
+    </a>
+
+    <!-- Card 2 -->
+    <a href="/shop/tools/photo-crop" class="ai-tool-card">
+      <div class="ai-icon-box" style="background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(99,102,241,0.05)); color: #818cf8;">
+        <i class="bi bi-person-bounding-box"></i>
       </div>
-      <div class="col-6 col-md-3">
-        <h3 style="font-weight: 800; font-size: 1.8rem; margin: 0; color: #f59e0b;">99.9%</h3>
-        <span style="font-size: 0.85rem; color: var(--text-muted);">Uptime Cloud</span>
+      <h4>AI Passport Studio</h4>
+      <p>Instant face auto-detect, white/blue background switch, and single-click 4x6 sheet distribution.</p>
+    </a>
+
+    <!-- Card 3 -->
+    <a href="/shop/billing/new" class="ai-tool-card">
+      <div class="ai-icon-box" style="background: linear-gradient(135deg, rgba(245,158,11,0.3), rgba(245,158,11,0.05)); color: #fbbf24;">
+        <i class="bi bi-receipt-cutoff"></i>
       </div>
-      <div class="col-6 col-md-3">
-        <h3 style="font-weight: 800; font-size: 1.8rem; margin: 0; color: #10b981;">100%</h3>
-        <span style="font-size: 0.85rem; color: var(--text-muted);">Data Privacy</span>
+      <h4>Lightning Invoicing</h4>
+      <p>Thermal slip generator, custom CSC logo receipts, and instant WhatsApp billing receipts.</p>
+    </a>
+
+    <!-- Card 4 -->
+    <a href="/shop/customers" class="ai-tool-card">
+      <div class="ai-icon-box" style="background: linear-gradient(135deg, rgba(16,185,129,0.3), rgba(16,185,129,0.05)); color: #34d399;">
+        <i class="bi bi-wallet2"></i>
       </div>
+      <h4>Smart Counter Khata</h4>
+      <p>Real-time customer dues tracking, daily cash book reconciliation, and automated analytics.</p>
+    </a>
+  </div>
+
+  <!-- AI Live Stats Strip -->
+  <div class="ai-stats-strip">
+    <div>
+      <div class="ai-stat-number" style="color: #06b6d4;">50,000+</div>
+      <div class="ai-stat-label">Prints Dispatched</div>
+    </div>
+    <div>
+      <div class="ai-stat-number" style="color: #818cf8;">1,200+</div>
+      <div class="ai-stat-label">Active Pragya Kendras</div>
+    </div>
+    <div>
+      <div class="ai-stat-number" style="color: #fbbf24;">99.98%</div>
+      <div class="ai-stat-label">Uptime Cloud Engine</div>
+    </div>
+    <div>
+      <div class="ai-stat-number" style="color: #34d399;">&lt; 0.4s</div>
+      <div class="ai-stat-label">Latency Processing</div>
     </div>
   </div>
 
