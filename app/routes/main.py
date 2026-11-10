@@ -3,7 +3,7 @@ import uuid
 from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
 from werkzeug.utils import secure_filename
 from app import db
-from app.models.tenant import Shop, PrintJob
+from app.models.tenant import Shop, PrintJob, SiteSetting
 
 main_bp = Blueprint('main', __name__)
 
@@ -14,7 +14,13 @@ def allowed_file(filename):
 
 @main_bp.route('/')
 def home():
-    return render_template('public/index.html')
+    stats = {
+        'prints': SiteSetting.get('stat_prints', '50,000+'),
+        'centers': SiteSetting.get('stat_centers', '1,200+'),
+        'uptime': SiteSetting.get('stat_uptime', '99.98%'),
+        'latency': SiteSetting.get('stat_latency', '< 0.4s'),
+    }
+    return render_template('public/index.html', stats=stats)
 
 @main_bp.route('/print/<shop_code>', methods=['GET', 'POST'])
 def customer_print_upload(shop_code):
