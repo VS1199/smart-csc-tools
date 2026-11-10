@@ -6,37 +6,26 @@ from werkzeug.security import generate_password_hash
 app = create_app()
 
 with app.app_context():
-    db.create_all()
-    
-    # 1. Sabhi Shops active ensure karein
+    # Schema refresh: purani mismatch tables ko drop karke nayi schema banana
     try:
-        shops = Shop.query.all()
-        for s in shops:
-            s.status = 'active'
-        db.session.commit()
+        db.drop_all()
+        db.create_all()
+        print("Database schema successfully recreated!")
     except Exception as e:
-        db.session.rollback()
-        print(f"Shop status sync notice: {e}")
+        print(f"Schema recreation error: {e}")
 
-    # 2. Superadmin ensure karein
+    # Superadmin user banayein
     try:
-        admin = User.query.filter_by(username='superadmin').first()
-        new_hash = generate_password_hash('Admin@00009')
-        if not admin:
-            admin = User(
-                username='superadmin',
-                email='admin@smartcsc.com',
-                password_hash=new_hash,
-                role='superadmin',
-                shop_id=None
-            )
-            db.session.add(admin)
-        else:
-            admin.password_hash = new_hash
-            admin.role = 'superadmin'
-            admin.shop_id = None
+        admin = User(
+            username='superadmin',
+            email='admin@smartcsc.com',
+            password_hash=generate_password_hash('Admin@00009'),
+            role='superadmin',
+            shop_id=None
+        )
+        db.session.add(admin)
         db.session.commit()
-        print("Superadmin synced with lowercase role 'superadmin' and password Admin@00009")
+        print("Superadmin created successfully!")
     except Exception as e:
         db.session.rollback()
         print(f"Superadmin setup notice: {e}")
