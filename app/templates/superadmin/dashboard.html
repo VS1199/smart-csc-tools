@@ -1,101 +1,608 @@
 {% extends "base.html" %}
 
+{% block title %}Pragya Kendra Super Admin Portal{% endblock %}
+
 {% block content %}
-<div class="container-fluid py-4 px-md-4">
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Header & Quick Nav Dock -->
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-    <div>
-      <h3 class="fw-bold text-white mb-1">Super Admin Control Panel</h3>
-      <p class="text-secondary small mb-0">Manage all multi-tenant CSC Centers, approvals, and dynamic portal configurations.</p>
-    </div>
+<style>
+  :root {
+    --adm-bg: #071220;
+    --adm-sidebar: #0b192c;
+    --adm-card: #12233b;
+    --adm-card-border: rgba(255, 255, 255, 0.08);
+    --adm-border-hover: rgba(255, 255, 255, 0.16);
+    --adm-text-bright: #ffffff;
+    --adm-text-muted: #8ea3bf;
+    --adm-accent-teal: #008779;
+    --adm-accent-green: #1b8a5a;
+    --adm-accent-amber: #b26a00;
+    --adm-accent-red: #c0392b;
+  }
 
-    <!-- 1-Click Fast Navigation Bar -->
-    <div class="d-flex flex-wrap gap-2">
-      <a href="{{ url_for('superadmin.homepage_stats') }}" class="btn btn-sm btn-info text-dark fw-bold rounded-pill px-3 shadow-sm">
-        <i class="bi bi-sliders me-1"></i> Edit Home Stats
-      </a>
-      <a href="{{ url_for('main.home') }}" target="_blank" class="btn btn-sm btn-outline-light rounded-pill px-3">
-        <i class="bi bi-box-arrow-up-right me-1"></i> View Live Site
-      </a>
-      <a href="{{ url_for('shop.dashboard') if 'shop.dashboard' in request.url_rule.endpoint else '/shop/dashboard' }}" class="btn btn-sm btn-outline-secondary text-white rounded-pill px-3">
-        <i class="bi bi-shop me-1"></i> Center Desk
-      </a>
-    </div>
-  </div>
+  body {
+    background-color: var(--adm-bg) !important;
+    color: var(--adm-text-bright);
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  }
 
-  <!-- Realtime Counts Row -->
-  <div class="row g-3 mb-4">
-    <div class="col-12 col-md-4">
-      <div class="p-3 rounded-4 shadow-sm" style="background: rgba(18, 24, 43, 0.7); border-left: 4px solid #06b6d4; border-top: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.08);">
-        <h2 class="fw-bold mb-1 text-white">{{ total_centers }}</h2>
-        <span class="text-secondary small text-uppercase fw-semibold">Total Registered Centers</span>
+  .admin-layout {
+    display: flex;
+    min-height: calc(100vh - 65px);
+    margin: -1.5rem -1rem;
+  }
+
+  /* Left Sidebar */
+  .admin-sidebar {
+    width: 275px;
+    background: var(--adm-sidebar);
+    border-right: 1px solid var(--adm-card-border);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-brand {
+    padding: 1.5rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--adm-card-border);
+  }
+
+  .sidebar-brand-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+    color: #fff;
+  }
+
+  .sidebar-brand-subtitle {
+    font-size: 0.7rem;
+    color: var(--adm-text-muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .sidebar-menu {
+    list-style: none;
+    padding: 0.75rem 0;
+    margin: 0;
+  }
+
+  .sidebar-menu li a {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 0.8rem 1.25rem;
+    color: var(--adm-text-muted);
+    text-decoration: none;
+    border-left: 4px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .sidebar-menu li.active a,
+  .sidebar-menu li a:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: #fff;
+    border-left-color: #00adb5;
+  }
+
+  .sidebar-menu li a i {
+    font-size: 1.2rem;
+    margin-top: 2px;
+  }
+
+  .menu-en {
+    font-size: 0.88rem;
+    font-weight: 600;
+    display: block;
+    color: #fff;
+  }
+
+  .menu-hi {
+    font-size: 0.74rem;
+    color: var(--adm-text-muted);
+    display: block;
+  }
+
+  /* Content Canvas */
+  .admin-main {
+    flex-grow: 1;
+    padding: 1.5rem 2rem;
+    overflow-y: auto;
+  }
+
+  .top-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .search-pill-input {
+    background: #0d1e33;
+    border: 1px solid var(--adm-card-border);
+    border-radius: 9999px;
+    padding: 6px 16px;
+    color: #fff;
+    font-size: 0.85rem;
+    width: 240px;
+    outline: none;
+  }
+
+  /* Stat Metric Cards */
+  .stat-card-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 1200px) {
+    .stat-card-row { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .stat-card {
+    border-radius: 12px;
+    padding: 1.2rem 1.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .stat-card.card-teal { background: #0c4349; }
+  .stat-card.card-green { background: #0c4f34; }
+  .stat-card.card-amber { background: #5a3d08; }
+  .stat-card.card-red { background: #5c2420; }
+
+  .stat-title-en { font-size: 0.88rem; font-weight: 600; margin: 0; }
+  .stat-title-hi { font-size: 0.74rem; opacity: 0.8; margin-bottom: 8px; }
+  .stat-value { font-size: 1.9rem; font-weight: 800; margin: 0; }
+
+  /* Dashboard Panel Box */
+  .panel-box {
+    background: var(--adm-card);
+    border: 1px solid var(--adm-card-border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    height: 100%;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .panel-title-en { font-size: 0.98rem; font-weight: 700; color: #fff; margin: 0; }
+  .panel-title-hi { font-size: 0.76rem; color: var(--adm-text-muted); margin: 0; }
+
+  .badge-status {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .status-online { background: #0b6b47; color: #4ade80; }
+  .status-slow { background: #694605; color: #fbbf24; }
+  .status-approved { background: #0b6b47; color: #4ade80; }
+  .status-pending { background: #b45309; color: #fde68a; }
+  .status-rejected { background: #7f1d1d; color: #fca5a5; }
+
+  .custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  .custom-table th {
+    color: var(--adm-text-muted);
+    font-weight: 500;
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--adm-card-border);
+  }
+  .custom-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  }
+</style>
+
+<div class="admin-layout">
+
+  <!-- Left Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <div style="width: 44px; height: 44px; border-radius: 50%; background: #0e2747; border: 1px solid #1f4273; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: #38bdf8;">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <div>
+        <div class="sidebar-brand-title">PRAGYA KENDRA</div>
+        <div class="sidebar-brand-subtitle">Super Admin Portal</div>
       </div>
     </div>
-    <div class="col-12 col-md-4">
-      <div class="p-3 rounded-4 shadow-sm" style="background: rgba(18, 24, 43, 0.7); border-left: 4px solid #10b981; border-top: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.08);">
-        <h2 class="fw-bold mb-1 text-success">{{ active_centers }}</h2>
-        <span class="text-secondary small text-uppercase fw-semibold">Active Centers</span>
-      </div>
-    </div>
-    <div class="col-12 col-md-4">
-      <div class="p-3 rounded-4 shadow-sm" style="background: rgba(18, 24, 43, 0.7); border-left: 4px solid #f59e0b; border-top: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.08);">
-        <h2 class="fw-bold mb-1 text-warning">{{ pending_centers }}</h2>
-        <span class="text-secondary small text-uppercase fw-semibold">Pending Approvals</span>
-      </div>
-    </div>
-  </div>
 
-  <!-- Registered Centers Directory Table -->
-  <div class="p-4 rounded-4 shadow-sm" style="background: rgba(18, 24, 43, 0.7); border: 1px solid rgba(255,255,255,0.08);">
-    <h5 class="fw-bold text-white mb-3">Registered Centers Directory</h5>
-    <div class="table-responsive">
-      <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
-        <thead class="text-secondary small text-uppercase" style="border-bottom: 1px solid rgba(255,255,255,0.12);">
-          <tr>
-            <th scope="col">Center Code</th>
-            <th scope="col">Center Name</th>
-            <th scope="col">Owner</th>
-            <th scope="col">Phone</th>
-            <th scope="col">Status</th>
-            <th scope="col" class="text-end">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% if shops %}
-            {% for shop in shops %}
-              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <td class="fw-semibold text-info">{{ shop.shop_code }}</td>
-                <td class="text-white">{{ shop.shop_name }}</td>
-                <td class="text-secondary">{{ shop.owner_name }}</td>
-                <td class="text-secondary">{{ shop.phone }}</td>
-                <td>
-                  {% if shop.is_active %}
-                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">Active</span>
-                  {% else %}
-                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-1">Pending</span>
-                  {% endif %}
-                </td>
-                <td class="text-end">
-                  {% if not shop.is_active %}
-                    <a href="{{ url_for('superadmin.approve_shop', shop_id=shop.id) }}" class="btn btn-sm btn-success rounded-pill px-3 py-1">Approve</a>
-                  {% else %}
-                    <a href="{{ url_for('superadmin.reject_shop', shop_id=shop.id) }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1">Deactivate</a>
-                  {% endif %}
-                </td>
+    <ul class="sidebar-menu">
+      <li class="active">
+        <a href="{{ url_for('superadmin.dashboard') }}">
+          <i class="bi bi-grid-fill"></i>
+          <div>
+            <span class="menu-en">Dashboard</span>
+            <span class="menu-hi">डैशबोर्ड</span>
+          </div>
+        </a>
+      </li>
+      <li>
+        <a href="#vle-management">
+          <i class="bi bi-people-fill"></i>
+          <div>
+            <span class="menu-en">VLE (Operator) Management</span>
+            <span class="menu-hi">प्रज्ञा केंद्र / VLE प्रबंधन</span>
+          </div>
+        </a>
+      </li>
+      <li>
+        <a href="#g2c-services">
+          <i class="bi bi-award-fill"></i>
+          <div>
+            <span class="menu-en">G2C Services Control</span>
+            <span class="menu-hi">सरकारी सेवाएं नियंत्रण</span>
+          </div>
+        </a>
+      </li>
+      <li>
+        <a href="#financials">
+          <i class="bi bi-currency-rupee"></i>
+          <div>
+            <span class="menu-en">Financials & Commissions</span>
+            <span class="menu-hi">वित्तीय एवं कमीशन</span>
+          </div>
+        </a>
+      </li>
+      <li>
+        <a href="#district-performance">
+          <i class="bi bi-pie-chart-fill"></i>
+          <div>
+            <span class="menu-en">District & Block Performance</span>
+            <span class="menu-hi">जिला एवं ब्लॉक प्रदर्शन</span>
+          </div>
+        </a>
+      </li>
+      <li>
+        <a href="#support">
+          <i class="bi bi-headset"></i>
+          <div>
+            <span class="menu-en">Grievances & Support</span>
+            <span class="menu-hi">शिकायत एवं सहायता</span>
+          </div>
+        </a>
+      </li>
+      <li>
+        <a href="#doc-verify">
+          <i class="bi bi-file-earmark-check-fill"></i>
+          <div>
+            <span class="menu-en">Document Verification</span>
+            <span class="menu-hi">दस्तावेज़ सत्यापन</span>
+          </div>
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('superadmin.homepage_stats') }}">
+          <i class="bi bi-sliders"></i>
+          <div>
+            <span class="menu-en">Site Stats Control</span>
+            <span class="menu-hi">होमपेज आँकड़े नियंत्रण</span>
+          </div>
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="admin-main">
+    
+    <!-- Top Bar -->
+    <div class="top-strip">
+      <div>
+        <h3 style="font-weight: 800; margin: 0; font-size: 1.6rem;">Dashboard</h3>
+        <span style="color: var(--adm-text-muted); font-size: 0.85rem;">Tuesday, November 10, 2026</span>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <input type="text" class="search-pill-input" placeholder="🔍 Quick Search...">
+        <div style="display: flex; align-items: center; gap: 10px; border-left: 1px solid var(--adm-card-border); padding-left: 15px;">
+          <i class="bi bi-bell-fill" style="color: var(--adm-text-muted); font-size: 1.1rem; cursor: pointer;"></i>
+          <div style="text-align: right; line-height: 1.2;">
+            <div style="font-size: 0.72rem; color: var(--adm-text-muted);">Welcome,</div>
+            <div style="font-size: 0.85rem; font-weight: 700;">State Super Admin</div>
+          </div>
+          <div style="width: 36px; height: 36px; border-radius: 50%; background: #1e3a5f; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+            A
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 Colored Metric KPI Cards -->
+    <div class="stat-card-row">
+      <!-- Card 1: Active Kendra -->
+      <div class="stat-card card-teal">
+        <div>
+          <div class="stat-title-en">Total Active Kendra</div>
+          <div class="stat-title-hi">कुल सक्रिय केंद्र</div>
+          <div class="stat-value">{{ active_centers|default(4345) }}</div>
+        </div>
+        <i class="bi bi-people" style="font-size: 1.8rem; opacity: 0.8;"></i>
+      </div>
+
+      <!-- Card 2: Transactions -->
+      <div class="stat-card card-green">
+        <div>
+          <div class="stat-title-en">Transactions Today</div>
+          <div class="stat-title-hi">आज के लेनदेन</div>
+          <div class="stat-value">84,210</div>
+        </div>
+        <i class="bi bi-arrow-left-right" style="font-size: 1.8rem; opacity: 0.8;"></i>
+      </div>
+
+      <!-- Card 3: Revenue -->
+      <div class="stat-card card-amber">
+        <div>
+          <div class="stat-title-en">Daily Revenue Collected</div>
+          <div class="stat-title-hi">कुल दैनिक राजस्व</div>
+          <div class="stat-value">₹12,45,800</div>
+        </div>
+        <i class="bi bi-cash-stack" style="font-size: 1.8rem; opacity: 0.8;"></i>
+      </div>
+
+      <!-- Card 4: Pending -->
+      <div class="stat-card card-red">
+        <div>
+          <div class="stat-title-en">Pending Approval</div>
+          <div class="stat-title-hi">लंबित अनुमोदन</div>
+          <div class="stat-value">{{ pending_centers|default(384) }} <span style="font-size: 0.8rem; font-weight: 400;">VLE Apps</span></div>
+        </div>
+        <i class="bi bi-exclamation-triangle" style="font-size: 1.8rem; opacity: 0.8;"></i>
+      </div>
+    </div>
+
+    <!-- Middle Row: Charts -->
+    <div class="row g-3 mb-4">
+      <!-- Bar Chart -->
+      <div class="col-lg-7">
+        <div class="panel-box">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title-en">District-wise Transaction &amp; Performance</div>
+              <div class="panel-title-hi">जिला-वार प्रदर्शन</div>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem; border-color: var(--adm-card-border); color: #fff;">
+              Metrics <i class="bi bi-chevron-down"></i>
+            </button>
+          </div>
+          <div style="height: 250px;">
+            <canvas id="districtBarChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Donut Chart -->
+      <div class="col-lg-5">
+        <div class="panel-box">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title-en">Service Utilization Share</div>
+              <div class="panel-title-hi">सेवा उपयोग हिस्सेदारी</div>
+            </div>
+          </div>
+          <div style="height: 250px; display: flex; align-items: center; justify-content: center;">
+            <canvas id="serviceDonutChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Row: Applications Table & System Status -->
+    <div class="row g-3">
+      <!-- VLE Applications -->
+      <div class="col-lg-7">
+        <div class="panel-box">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title-en">Recent VLE Applications</div>
+              <div class="panel-title-hi">हाल के VLE आवेदन</div>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem; border-color: var(--adm-card-border); color: #fff;">
+              Live table <i class="bi bi-chevron-down"></i>
+            </button>
+          </div>
+
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Center / Shop</th>
+                <th>Block / District</th>
+                <th>Status</th>
+                <th style="text-align: right;">Action</th>
               </tr>
-            {% endfor %}
-          {% else %}
-            <tr>
-              <td colspan="6" class="text-center py-4 text-secondary">
-                No CSC centers registered yet.
-              </td>
-            </tr>
-          {% endif %}
-        </tbody>
-      </table>
-    </div>
-  </div>
+            </thead>
+            <tbody>
+              {% if shops %}
+                {% for shop in shops[:4] %}
+                <tr>
+                  <td>
+                    <div style="font-weight: 600; color: #fff;">{{ shop.shop_name }}</div>
+                    <small style="color: var(--adm-text-muted);">{{ shop.shop_code }}</small>
+                  </td>
+                  <td>{{ shop.address if shop.address else 'Ranchi' }}</td>
+                  <td>
+                    {% if shop.is_active %}
+                      <span class="badge-status status-approved">Approved</span>
+                    {% else %}
+                      <span class="badge-status status-pending">Pending</span>
+                    {% endif %}
+                  </td>
+                  <td style="text-align: right;">
+                    {% if not shop.is_active %}
+                      <a href="{{ url_for('superadmin.approve_shop', shop_id=shop.id) }}" class="btn btn-sm btn-primary py-0 px-2" style="font-size: 0.75rem; border-radius: 4px;">Approve</a>
+                    {% else %}
+                      <a href="{{ url_for('superadmin.reject_shop', shop_id=shop.id) }}" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 0.75rem; border-radius: 4px;">Action</a>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td>
+                    <div style="font-weight: 600; color: #fff;">Pragya Kendra Hehal</div>
+                    <small style="color: var(--adm-text-muted);">10/01/2026</small>
+                  </td>
+                  <td>Ranchi</td>
+                  <td><span class="badge-status status-approved">Approved</span></td>
+                  <td style="text-align: right;"><button class="btn btn-sm btn-primary py-0 px-2" style="font-size: 0.75rem;">Action</button></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="font-weight: 600; color: #fff;">Sakchi Digital Hub</div>
+                    <small style="color: var(--adm-text-muted);">10/01/2026</small>
+                  </td>
+                  <td>Jamshedpur</td>
+                  <td><span class="badge-status status-pending">Pending</span></td>
+                  <td style="text-align: right;"><button class="btn btn-sm btn-primary py-0 px-2" style="font-size: 0.75rem;">Action</button></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="font-weight: 600; color: #fff;">City Center CSC</div>
+                    <small style="color: var(--adm-text-muted);">10/01/2026</small>
+                  </td>
+                  <td>Bokaro</td>
+                  <td><span class="badge-status status-approved">Approved</span></td>
+                  <td style="text-align: right;"><button class="btn btn-sm btn-primary py-0 px-2" style="font-size: 0.75rem;">Action</button></td>
+                </tr>
+                <tr>
+                  <td>
+                    <div style="font-weight: 600; color: #fff;">Bistupur Online Point</div>
+                    <small style="color: var(--adm-text-muted);">10/01/2026</small>
+                  </td>
+                  <td>Jamshedpur</td>
+                  <td><span class="badge-status status-rejected">Rejected</span></td>
+                  <td style="text-align: right;"><button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;">Action</button></td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
+      <!-- Real-time Gateway Alerts & Service Status -->
+      <div class="col-lg-5">
+        <div class="panel-box">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title-en">Real-time System Alert &amp; Service Status</div>
+              <div class="panel-title-hi">सिस्टम अलर्ट एवं सेवा स्थिति</div>
+            </div>
+          </div>
+
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Live Gateway APIs</th>
+                <th style="text-align: right;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight: 600;">Aadhaar/E-KYC Gateway</td>
+                <td style="text-align: right;"><span class="badge-status status-online">Online</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">Land Records / Jharbhoomi</td>
+                <td style="text-align: right;"><span class="badge-status status-online">Online</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">Banking / AEPS Service</td>
+                <td style="text-align: right;"><span class="badge-status status-online">Online</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight: 600;">Voter ID &amp; Election Services</td>
+                <td style="text-align: right;"><span class="badge-status status-slow">⚠️ Slow</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
 </div>
+
+<!-- Charts Script -->
+<script>
+  // 1. District Bar Chart
+  const ctxBar = document.getElementById('districtBarChart').getContext('2d');
+  new Chart(ctxBar, {
+    type: 'bar',
+    data: {
+      labels: ['Ranchi', 'Jamshedpur', 'Dhanbad', 'Bokaro', 'Hazaribagh'],
+      datasets: [{
+        label: 'Transactions',
+        data: [88000, 64000, 53000, 42000, 33000],
+        backgroundColor: '#10b981',
+        borderRadius: 4,
+        barThickness: 34
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: '#8ea3bf', font: { size: 11 } }
+        },
+        y: {
+          grid: { color: 'rgba(255, 255, 255, 0.05)' },
+          ticks: { color: '#8ea3bf', stepSize: 25000, font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  // 2. Service Utilization Donut Chart
+  const ctxDonut = document.getElementById('serviceDonutChart').getContext('2d');
+  new Chart(ctxDonut, {
+    type: 'doughnut',
+    data: {
+      labels: ['Aadhaar/E-KYC', 'Banking/AEPS', 'Social Security', 'Caste/Income/Domicile'],
+      datasets: [{
+        data: [35, 25, 22, 18],
+        backgroundColor: [
+          '#10b981',
+          '#0ea5e9',
+          '#f59e0b',
+          '#ea580c'
+        ],
+        borderWidth: 2,
+        borderColor: '#12233b'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: { color: '#cbd5e1', boxWidth: 12, font: { size: 10 } }
+        }
+      },
+      cutout: '55%'
+    }
+  });
+</script>
 {% endblock %}
