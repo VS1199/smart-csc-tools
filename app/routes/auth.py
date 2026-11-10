@@ -8,25 +8,21 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        if str(getattr(current_user, 'role', '')).upper() == 'SUPERADMIN':
-            return redirect(url_for('superadmin.dashboard'))
-        return redirect(url_for('shop.dashboard'))
+    # Loop break: agar user already logged in hai to direct redirect mat karo agar method GET hai
+    if current_user.is_authenticated and request.method == 'GET':
+        logout_user()
 
     if request.method == 'POST':
         identifier = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
 
-        # Step 1: Match username ya email
         user = User.query.filter((User.username == identifier) | (User.email == identifier)).first()
 
-        # Step 2: Agar user nahi mila to shop_code se dhoondhein
         if not user:
             shop = Shop.query.filter_by(shop_code=identifier).first()
             if shop and shop.users:
                 user = shop.users[0]
 
-        # Password match check
         password_matched = False
         if user:
             if hasattr(user, 'check_password'):
@@ -39,10 +35,9 @@ def login():
                 flash('This user account has been disabled.', 'danger')
                 return redirect(url_for('auth.login'))
 
-            user_role = str(getattr(user, 'role', '')).upper()
+            user_role = str(getattr(user, 'role', '')).lower()
 
-            # Superadmin ke liye koi shop check nahi chalega
-            if user_role != 'SUPERADMIN':
+            if user_role != 'superadmin':
                 if user.shop and not user.shop.is_active:
                     flash('Your Center account is currently pending Admin approval.', 'warning')
                     return redirect(url_for('auth.login'))
@@ -50,7 +45,7 @@ def login():
             login_user(user)
             flash(f'Welcome back, {user.username}!', 'success')
 
-            if user_role == 'SUPERADMIN':
+            if user_role == 'superadmin':
                 return redirect(url_for('superadmin.dashboard'))
             return redirect(url_for('shop.dashboard'))
         else:
