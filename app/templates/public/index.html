@@ -84,22 +84,22 @@
     </a>
   </div>
 
-  <!-- AI Live Stats Strip -->
+  <!-- AI Live Stats Strip (Dynamic Superadmin Control) -->
   <div class="ai-stats-strip">
     <div>
-      <div class="ai-stat-number" style="color: #06b6d4;">50,000+</div>
+      <div class="ai-stat-number" style="color: #06b6d4;">{{ stats.prints if stats else '50,000+' }}</div>
       <div class="ai-stat-label">Prints Dispatched</div>
     </div>
     <div>
-      <div class="ai-stat-number" style="color: #818cf8;">1,200+</div>
+      <div class="ai-stat-number" style="color: #818cf8;">{{ stats.centers if stats else '1,200+' }}</div>
       <div class="ai-stat-label">Active Pragya Kendras</div>
     </div>
     <div>
-      <div class="ai-stat-number" style="color: #fbbf24;">99.98%</div>
+      <div class="ai-stat-number" style="color: #fbbf24;">{{ stats.uptime if stats else '99.98%' }}</div>
       <div class="ai-stat-label">Uptime Cloud Engine</div>
     </div>
     <div>
-      <div class="ai-stat-number" style="color: #34d399;">&lt; 0.4s</div>
+      <div class="ai-stat-number" style="color: #34d399;">{{ stats.latency if stats else '< 0.4s' }}</div>
       <div class="ai-stat-label">Latency Processing</div>
     </div>
   </div>
