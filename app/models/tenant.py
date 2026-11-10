@@ -30,8 +30,10 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String(20), nullable=False, default='shopkeeper')
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
+        
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
@@ -89,3 +91,25 @@ class PrintJob(db.Model):
     total_amount = db.Column(db.Float, default=0.0)
     status = db.Column(db.String(20), default='PENDING')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+# Dynamic Site Settings for Superadmin Control
+class SiteSetting(db.Model):
+    __tablename__ = 'site_settings'
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(100), unique=True, nullable=False)
+    value = db.Column(db.String(255), nullable=False)
+
+    @classmethod
+    def get(cls, key, default=""):
+        setting = cls.query.filter_by(key=key).first()
+        return setting.value if setting else default
+
+    @classmethod
+    def set(cls, key, value):
+        setting = cls.query.filter_by(key=key).first()
+        if not setting:
+            setting = cls(key=key, value=str(value))
+            db.session.add(setting)
+        else:
+            setting.value = str(value)
+        db.session.commit()
