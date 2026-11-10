@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
-from flask_login import login_required
+from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask_login import login_required, current_user
 from app import db
-from app.models.tenant import Shop, User
+from app.models.tenant import Shop, User, SiteSetting
 from app.services.auth_guard import superadmin_required
 
 superadmin_bp = Blueprint('superadmin', __name__, url_prefix='/superadmin')
@@ -39,3 +39,23 @@ def reject_shop(shop_id):
     db.session.commit()
     flash(f'Center {shop.shop_code} has been deactivated/rejected.', 'warning')
     return redirect(url_for('superadmin.dashboard'))
+
+@superadmin_bp.route('/homepage-stats', methods=['GET', 'POST'])
+@login_required
+@superadmin_required
+def homepage_stats():
+    if request.method == 'POST':
+        SiteSetting.set('stat_prints', request.form.get('stat_prints', '50,000+'))
+        SiteSetting.set('stat_centers', request.form.get('stat_centers', '1,200+'))
+        SiteSetting.set('stat_uptime', request.form.get('stat_uptime', '99.98%'))
+        SiteSetting.set('stat_latency', request.form.get('stat_latency', '< 0.4s'))
+        flash('Homepage metrics updated successfully!', 'success')
+        return redirect(url_for('superadmin.homepage_stats'))
+
+    stats = {
+        'prints': SiteSetting.get('stat_prints', '50,000+'),
+        'centers': SiteSetting.get('stat_centers', '1,200+'),
+        'uptime': SiteSetting.get('stat_uptime', '99.98%'),
+        'latency': SiteSetting.get('stat_latency', '< 0.4s'),
+    }
+    return render_template('superadmin/homepage_stats.html', stats=stats)
