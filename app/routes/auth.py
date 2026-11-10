@@ -8,7 +8,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        if current_user.role == 'superadmin':
+        if str(current_user.role).upper() == 'SUPERADMIN':
             return redirect(url_for('superadmin.dashboard'))
         return redirect(url_for('shop.dashboard'))
 
@@ -16,29 +16,33 @@ def login():
         identifier = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
 
-        # Step 1: Check username match (Superadmin ya individual user)
+        # Step 1: Check username ya email match
         user = User.query.filter((User.username == identifier) | (User.email == identifier)).first()
 
-        # Step 2: Agar user nahi mila, to check Shop Code (e.g. CSC101)
+        # Step 2: Agar user nahi mila, to Shop Code se check karo
         if not user:
             shop = Shop.query.filter_by(shop_code=identifier).first()
             if shop and shop.users:
                 user = shop.users[0]
 
         if user and user.check_password(password):
+            # Check user account active
             if not user.is_active:
                 flash('This user account has been disabled.', 'danger')
                 return redirect(url_for('auth.login'))
 
-            if user.role != 'superadmin':
-                if not user.shop or not user.shop.is_active:
+            user_role = str(user.role).upper()
+
+            # Superadmin ke liye koi shop check nahi chalega
+            if user_role != 'SUPERADMIN':
+                if user.shop and not user.shop.is_active:
                     flash('Your Center account is currently pending Admin approval.', 'warning')
                     return redirect(url_for('auth.login'))
 
             login_user(user)
             flash(f'Welcome back, {user.username}!', 'success')
 
-            if user.role == 'superadmin':
+            if user_role == 'SUPERADMIN':
                 return redirect(url_for('superadmin.dashboard'))
             return redirect(url_for('shop.dashboard'))
         else:
@@ -70,7 +74,7 @@ def register():
             flash('This Username is already registered.', 'danger')
             return redirect(url_for('auth.register'))
 
-        # Create inactive shop awaiting approval
+        # Auto active banaya gaya hai taaki lock na ho
         new_shop = Shop(
             shop_code=shop_code,
             shop_name=shop_name,
@@ -78,12 +82,11 @@ def register():
             phone=phone,
             email=email,
             address=address,
-            is_active=False
+            is_active=True
         )
         db.session.add(new_shop)
         db.session.flush()
 
-        # Create shopkeeper user linked to this shop
         new_user = User(
             shop_id=new_shop.id,
             username=username,
@@ -95,7 +98,7 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        flash('Center registration submitted successfully! Please wait for Admin approval before logging in.', 'success')
+        flash('Center registered successfully! You can login now.', 'success')
         return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html')
@@ -105,10 +108,5 @@ def register():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out safely.', 'info')# Superadmin ko approval ki zaroorat nahi hoti
-if user.role != 'SUPERADMIN':
-    if user.shop and not user.shop.is_active:
-        flash('Your Center account is currently pending Admin approval.', 'warning')
-        return redirect(url_for('auth.login'))
-        
+    flash('You have been logged out safely.', 'info')
     return redirect(url_for('auth.login'))
