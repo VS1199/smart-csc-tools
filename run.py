@@ -9,16 +9,25 @@ app = create_app()
 with app.app_context():
     db.create_all()
 
-    # Safe column add agar table me shop_code miss ho
+    # Shops aur Users table ke missing columns ko safe tareeqe se add karein
     try:
-        db.session.execute(text("ALTER TABLE shops ADD COLUMN IF NOT EXISTS shop_code VARCHAR(50);"))
-        db.session.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;"))
+        alter_queries = [
+            "ALTER TABLE shops ADD COLUMN IF NOT EXISTS shop_code VARCHAR(50);",
+            "ALTER TABLE shops ADD COLUMN IF NOT EXISTS email VARCHAR(120);",
+            "ALTER TABLE shops ADD COLUMN IF NOT EXISTS address VARCHAR(255);",
+            "ALTER TABLE shops ADD COLUMN IF NOT EXISTS wallet_balance FLOAT DEFAULT 0.0;",
+            "ALTER TABLE shops ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active';",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;"
+        ]
+        for query in alter_queries:
+            db.session.execute(text(query))
         db.session.commit()
+        print("Database columns verified and updated!")
     except Exception as e:
         db.session.rollback()
-        print(f"Column check notice: {e}")
+        print(f"Column migration notice: {e}")
 
-    # Ensure Superadmin exists
+    # Superadmin setup
     try:
         admin = User.query.filter_by(username='superadmin').first()
         if not admin:
