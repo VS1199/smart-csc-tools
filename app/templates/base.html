@@ -4,12 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Smart CSC Tools{% endblock %}</title>
+
+    <!-- Google Font (SF / Inter Style) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Icons (Paytm style icons ke liye zaroori) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pro_theme.css') }}">
 </head>
-<body>
-    <header class="navbar">
+<body class="pro-theme">
+    <header class="navbar pro-navbar">
         <div class="container nav-container">
-            <a href="/" class="brand-logo">Smart CSC <span>Tools</span></a>
+            <a href="/" class="brand-logo" style="text-decoration: none; font-weight: 700; color: #fff; font-size: 1.25rem;">
+                Smart CSC <span style="color: var(--titanium-gold, #e5b887);">Tools</span>
+            </a>
             <nav class="nav-links">
                 <a href="/">Home</a>
                 {% if current_user.is_authenticated %}
@@ -19,20 +32,20 @@
                         <a href="/shop/dashboard">My Center</a>
                         <a href="/shop/tools/">CSC Tools</a>
                     {% endif %}
-                    <a href="/auth/logout" class="btn-logout">Logout ({{ current_user.username }})</a>
+                    <a href="/auth/logout" class="btn-logout" style="border-radius: 9999px;">Logout ({{ current_user.username }})</a>
                 {% else %}
                     <a href="/auth/register">Register Center</a>
-                    <a href="/auth/login" class="btn-login">Login</a>
+                    <a href="/auth/login" class="btn-login" style="border-radius: 9999px;">Login</a>
                 {% endif %}
             </nav>
         </div>
     </header>
 
-    <div class="container message-box">
+    <div class="container message-box" style="margin-top: 1rem;">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    <div class="alert alert-{{ category }}" style="border-radius: 12px; margin-bottom: 0.75rem;">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
@@ -44,9 +57,9 @@
         </div>
     </main>
 
-    <footer class="footer">
+    <footer class="footer" style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 1.5rem 0; margin-top: 3rem; text-align: center; color: var(--titanium-slate, #94a3b8); font-size: 0.85rem;">
         <div class="container">
-            <p>&copy; 2026 Smart CSC Tools. All Rights Reserved.</p>
+            <p class="mb-0">&copy; 2026 Smart CSC Tools. All Rights Reserved.</p>
         </div>
     </footer>
 </body>
