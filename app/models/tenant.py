@@ -3,6 +3,27 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
+class Shop(db.Model):
+    __tablename__ = 'shops'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)  # Kendra / Shop Name
+    slug = db.Column(db.String(80), unique=True, nullable=False)
+    owner_name = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    status = db.Column(db.String(20), default='active')  # 'active', 'pending', 'suspended'
+    wallet_balance = db.Column(db.Float, default=0.0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships
+    users = db.relationship('User', backref='shop', lazy=True)
+    customers = db.relationship('Customer', backref='shop', cascade="all, delete-orphan", lazy=True)
+    services = db.relationship('Service', backref='shop', cascade="all, delete-orphan", lazy=True)
+    transactions = db.relationship('Transaction', backref='shop', cascade="all, delete-orphan", lazy=True)
+    print_jobs = db.relationship('PrintJob', backref='shop', cascade="all, delete-orphan", lazy=True)
+
+# Compatibility alias: Tenant and Shop are the same
+Tenant = Shop
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -12,7 +33,8 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String(20), default='vle')  # 'superadmin' ya 'vle'
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=True)
+    shop_id = db.Column(db.Integer, db.ForeignKey('shops.id'), nullable=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('shops.id'), nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -24,35 +46,41 @@ class User(UserMixin, db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-class Tenant(db.Model):
-    __tablename__ = 'tenants'
+class Customer(db.Model):
+    __tablename__ = 'customers'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable=False)  # Shop / Kendra Name
-    slug = db.Column(db.String(80), unique=True, nullable=False)  # Unique portal slug
-    owner_name = db.Column(db.String(100), nullable=False)
+    shop_id = db.Column(db.Integer, db.ForeignKey('shops.id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
-    status = db.Column(db.String(20), default='active')  # 'pending', 'active', 'suspended'
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    users = db.relationship('User', backref='tenant', lazy=True)
-    services = db.relationship('Service', backref='tenant', cascade="all, delete-orphan", lazy=True)
-    orders = db.relationship('Order', backref='tenant', cascade="all, delete-orphan", lazy=True)
 
 class Service(db.Model):
     __tablename__ = 'services'
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False)
+    shop_id = db.Column(db.Integer, db.ForeignKey('shops.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, default=0.0)
     is_active = db.Column(db.Boolean, default=True)
 
-class Order(db.Model):
-    __tablename__ = 'orders'
+class Transaction(db.Model):
+    __tablename__ = 'transactions'
     id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False)
-    customer_name = db.Column(db.String(100), nullable=False)
-    customer_phone = db.Column(db.String(20), nullable=False)
+    shop_id = db.Column(db.Integer, db.ForeignKey('shops.id'), nullable=False)
+    customer_name = db.Column(db.String(100), nullable=True)
     service_name = db.Column(db.String(100), nullable=False)
     amount = db.Column(db.Float, default=0.0)
-    status = db.Column(db.String(20), default='completed')
+    status = db.Column(db.String(20), default='success')  # 'success', 'pending', 'failed'
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class PrintJob(db.Model):
+    __tablename__ = 'print_jobs'
+    id = db.Column(db.Integer, primary_key=True)
+    shop_id = db.Column(db.Integer, db.ForeignKey('shops.id'), nullable=False)
+    file_name = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.String(255), nullable=True)
+    pages = db.Column(db.Integer, default=1)
+    status = db.Column(db.String(20), default='pending')  # 'pending', 'printed', 'cancelled'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+# Compatibility aliases
+Order = Transaction
