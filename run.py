@@ -10,33 +10,38 @@ with app.app_context():
     
     # 1. Sabhi Shops active ensure karein
     try:
-        Shop.query.update({Shop.is_active: True})
+        shops = Shop.query.all()
+        for s in shops:
+            s.status = 'active'
         db.session.commit()
-    except Exception:
+    except Exception as e:
         db.session.rollback()
+        print(f"Shop status sync notice: {e}")
 
-    # 2. Superadmin ko lowercase 'superadmin' role dein taaki permission pass ho sake
-    admin = User.query.filter_by(username='superadmin').first()
-    new_hash = generate_password_hash('Admin@00009')
-    if not admin:
-        admin = User(
-            username='superadmin',
-            email='admin@smartcsc.com',
-            password_hash=new_hash,
-            role='superadmin',
-            is_active=True,
-            shop_id=None
-        )
-        db.session.add(admin)
-    else:
-        admin.password_hash = new_hash
-        admin.role = 'superadmin'
-        admin.is_active = True
-        admin.shop_id = None
-    db.session.commit()
-    print("Superadmin synced with lowercase role 'superadmin' and password Admin@00009")
+    # 2. Superadmin ensure karein
+    try:
+        admin = User.query.filter_by(username='superadmin').first()
+        new_hash = generate_password_hash('Admin@00009')
+        if not admin:
+            admin = User(
+                username='superadmin',
+                email='admin@smartcsc.com',
+                password_hash=new_hash,
+                role='superadmin',
+                shop_id=None
+            )
+            db.session.add(admin)
+        else:
+            admin.password_hash = new_hash
+            admin.role = 'superadmin'
+            admin.shop_id = None
+        db.session.commit()
+        print("Superadmin synced with lowercase role 'superadmin' and password Admin@00009")
+    except Exception as e:
+        db.session.rollback()
+        print(f"Superadmin setup notice: {e}")
 
-# Direct session reset route (infinite redirect loop todne ke liye)
+# Direct session reset route
 @app.route('/reset-session')
 def reset_session():
     from flask_login import logout_user
