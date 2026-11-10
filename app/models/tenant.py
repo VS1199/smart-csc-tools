@@ -6,7 +6,7 @@ from datetime import datetime
 class Shop(db.Model):
     __tablename__ = 'shops'
     id = db.Column(db.Integer, primary_key=True)
-    shop_code = db.Column(db.String(50), unique=True, nullable=True)  # CSC-RNC-03
+    shop_code = db.Column(db.String(50), unique=True, nullable=True)
     name = db.Column(db.String(120), nullable=False)
     slug = db.Column(db.String(80), unique=True, nullable=True)
     owner_name = db.Column(db.String(100), nullable=True)
@@ -25,7 +25,6 @@ class Shop(db.Model):
     print_jobs = db.relationship('PrintJob', backref='shop', cascade="all, delete-orphan", lazy=True)
 
     def __init__(self, **kwargs):
-        # Flexible handling for any form parameter name
         name_val = kwargs.pop('shop_name', None) or kwargs.pop('center_name', None) or kwargs.get('name')
         if name_val:
             kwargs['name'] = name_val
@@ -37,18 +36,9 @@ class Shop(db.Model):
         if 'slug' not in kwargs and 'name' in kwargs and kwargs['name']:
             kwargs['slug'] = kwargs['name'].lower().replace(' ', '-')
 
-        # Only set fields that exist as table columns
         valid_cols = {c.name for c in self.__table__.columns}
         filtered_kwargs = {k: v for k, v in kwargs.items() if k in valid_cols}
         super().__init__(**filtered_kwargs)
-
-    @property
-    def shop_name(self):
-        return self.name
-
-    @shop_name.setter
-    def shop_name(self, value):
-        self.name = value
 
     @property
     def is_active(self):
@@ -118,6 +108,8 @@ class Transaction(db.Model):
     customer_name = db.Column(db.String(100), nullable=True)
     service_name = db.Column(db.String(100), nullable=False)
     amount = db.Column(db.Float, default=0.0)
+    commission = db.Column(db.Float, default=0.0)  # VLE Net Profit
+    tx_type = db.Column(db.String(20), default='debit')  # 'credit' (recharge) ya 'debit' (service)
     status = db.Column(db.String(20), default='success')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
