@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
 from app.models.tenant import User, Shop
 
@@ -8,7 +9,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        if str(current_user.role).upper() == 'SUPERADMIN':
+        if str(getattr(current_user, 'role', '')).upper() == 'SUPERADMIN':
             return redirect(url_for('superadmin.dashboard'))
         return redirect(url_for('shop.dashboard'))
 
@@ -16,22 +17,29 @@ def login():
         identifier = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
 
-        # Step 1: Check username ya email match
+        # Step 1: Match username ya email
         user = User.query.filter((User.username == identifier) | (User.email == identifier)).first()
 
-        # Step 2: Agar user nahi mila, to Shop Code se check karo
+        # Step 2: Agar user nahi mila to shop_code se dhoondhein
         if not user:
             shop = Shop.query.filter_by(shop_code=identifier).first()
             if shop and shop.users:
                 user = shop.users[0]
 
-        if user and user.check_password(password):
-            # Check user account active
+        # Password match check
+        password_matched = False
+        if user:
+            if hasattr(user, 'check_password'):
+                password_matched = user.check_password(password)
+            elif hasattr(user, 'password_hash') and user.password_hash:
+                password_matched = check_password_hash(user.password_hash, password)
+
+        if user and password_matched:
             if not user.is_active:
                 flash('This user account has been disabled.', 'danger')
                 return redirect(url_for('auth.login'))
 
-            user_role = str(user.role).upper()
+            user_role = str(getattr(user, 'role', '')).upper()
 
             # Superadmin ke liye koi shop check nahi chalega
             if user_role != 'SUPERADMIN':
@@ -74,7 +82,6 @@ def register():
             flash('This Username is already registered.', 'danger')
             return redirect(url_for('auth.register'))
 
-        # Auto active banaya gaya hai taaki lock na ho
         new_shop = Shop(
             shop_code=shop_code,
             shop_name=shop_name,
@@ -94,7 +101,11 @@ def register():
             role='shopkeeper',
             is_active=True
         )
-        new_user.set_password(password)
+        if hasattr(new_user, 'set_password'):
+            new_user.set_password(password)
+        else:
+            new_user.password_hash = generate_password_hash(password)
+
         db.session.add(new_user)
         db.session.commit()
 
