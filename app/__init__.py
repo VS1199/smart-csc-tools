@@ -18,6 +18,10 @@ def create_app(config_class=Config):
 
     with app.app_context():
         from app.models import tenant
+        try:
+            db.create_all()
+        except Exception as e:
+            print(f"DB Init notice: {e}")
 
     # Register Blueprints
     from app.routes.main import main_bp
