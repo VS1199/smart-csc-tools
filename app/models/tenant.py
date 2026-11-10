@@ -6,6 +6,7 @@ from datetime import datetime
 class Shop(db.Model):
     __tablename__ = 'shops'
     id = db.Column(db.Integer, primary_key=True)
+    shop_code = db.Column(db.String(50), unique=True, nullable=True)  # e.g., CSC-RNC-03
     name = db.Column(db.String(120), nullable=False)
     slug = db.Column(db.String(80), unique=True, nullable=False)
     owner_name = db.Column(db.String(100), nullable=False)
@@ -21,6 +22,16 @@ class Shop(db.Model):
     transactions = db.relationship('Transaction', backref='shop', cascade="all, delete-orphan", lazy=True)
     print_jobs = db.relationship('PrintJob', backref='shop', cascade="all, delete-orphan", lazy=True)
 
+    # Boolean is_active helper for compatibility
+    @property
+    def is_active(self):
+        return self.status == 'active'
+
+    @is_active.setter
+    def is_active(self, val):
+        self.status = 'active' if val else 'suspended'
+
+# Compatibility alias
 Tenant = Shop
 
 class User(UserMixin, db.Model):
@@ -30,6 +41,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(20), default='vle')
+    is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     shop_id = db.Column(db.Integer, db.ForeignKey('shops.id'), nullable=True)
