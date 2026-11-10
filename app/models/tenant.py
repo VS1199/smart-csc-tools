@@ -6,22 +6,21 @@ from datetime import datetime
 class Shop(db.Model):
     __tablename__ = 'shops'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable=False)  # Kendra / Shop Name
+    name = db.Column(db.String(120), nullable=False)
     slug = db.Column(db.String(80), unique=True, nullable=False)
     owner_name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
-    status = db.Column(db.String(20), default='active')  # 'active', 'pending', 'suspended'
+    status = db.Column(db.String(20), default='active')
     wallet_balance = db.Column(db.Float, default=0.0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Relationships
     users = db.relationship('User', backref='shop', lazy=True)
     customers = db.relationship('Customer', backref='shop', cascade="all, delete-orphan", lazy=True)
     services = db.relationship('Service', backref='shop', cascade="all, delete-orphan", lazy=True)
     transactions = db.relationship('Transaction', backref='shop', cascade="all, delete-orphan", lazy=True)
     print_jobs = db.relationship('PrintJob', backref='shop', cascade="all, delete-orphan", lazy=True)
 
-# Compatibility alias: Tenant and Shop are the same
+# Compatibility alias
 Tenant = Shop
 
 class User(UserMixin, db.Model):
@@ -30,7 +29,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
-    role = db.Column(db.String(20), default='vle')  # 'superadmin' ya 'vle'
+    role = db.Column(db.String(20), default='vle')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     shop_id = db.Column(db.Integer, db.ForeignKey('shops.id'), nullable=True)
@@ -69,7 +68,7 @@ class Transaction(db.Model):
     customer_name = db.Column(db.String(100), nullable=True)
     service_name = db.Column(db.String(100), nullable=False)
     amount = db.Column(db.Float, default=0.0)
-    status = db.Column(db.String(20), default='success')  # 'success', 'pending', 'failed'
+    status = db.Column(db.String(20), default='success')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class PrintJob(db.Model):
@@ -79,8 +78,14 @@ class PrintJob(db.Model):
     file_name = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.String(255), nullable=True)
     pages = db.Column(db.Integer, default=1)
-    status = db.Column(db.String(20), default='pending')  # 'pending', 'printed', 'cancelled'
+    status = db.Column(db.String(20), default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-# Compatibility aliases
+class SiteSetting(db.Model):
+    __tablename__ = 'site_settings'
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(50), unique=True, nullable=False)
+    value = db.Column(db.String(255), nullable=True)
+
+# Compatibility alias
 Order = Transaction
