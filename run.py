@@ -6,31 +6,26 @@ from werkzeug.security import generate_password_hash
 app = create_app()
 
 with app.app_context():
-    # Schema refresh: purani mismatch tables ko drop karke nayi schema banana
-    try:
-        db.drop_all()
-        db.create_all()
-        print("Database schema successfully recreated!")
-    except Exception as e:
-        print(f"Schema recreation error: {e}")
+    db.create_all()
 
-    # Superadmin user banayein
+    # Ensure Superadmin exists
     try:
-        admin = User(
-            username='superadmin',
-            email='admin@smartcsc.com',
-            password_hash=generate_password_hash('Admin@00009'),
-            role='superadmin',
-            shop_id=None
-        )
-        db.session.add(admin)
-        db.session.commit()
-        print("Superadmin created successfully!")
+        admin = User.query.filter_by(username='superadmin').first()
+        if not admin:
+            admin = User(
+                username='superadmin',
+                email='admin@smartcsc.com',
+                password_hash=generate_password_hash('Admin@00009'),
+                role='superadmin',
+                shop_id=None
+            )
+            db.session.add(admin)
+            db.session.commit()
+            print("Superadmin created successfully!")
     except Exception as e:
         db.session.rollback()
         print(f"Superadmin setup notice: {e}")
 
-# Direct session reset route
 @app.route('/reset-session')
 def reset_session():
     from flask_login import logout_user
