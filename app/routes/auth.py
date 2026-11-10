@@ -105,5 +105,10 @@ def register():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logged out safely.', 'info')
+    flash('You have been logged out safely.', 'info')# Superadmin ko approval ki zaroorat nahi hoti
+if user.role != 'SUPERADMIN':
+    if user.shop and not user.shop.is_active:
+        flash('Your Center account is currently pending Admin approval.', 'warning')
+        return redirect(url_for('auth.login'))
+        
     return redirect(url_for('auth.login'))
