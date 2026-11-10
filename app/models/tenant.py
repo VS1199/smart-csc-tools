@@ -6,11 +6,11 @@ from datetime import datetime
 class Shop(db.Model):
     __tablename__ = 'shops'
     id = db.Column(db.Integer, primary_key=True)
-    shop_code = db.Column(db.String(50), unique=True, nullable=True)  # e.g., CSC-RNC-03
+    shop_code = db.Column(db.String(50), unique=True, nullable=True)  # CSC-RNC-03
     name = db.Column(db.String(120), nullable=False)
-    slug = db.Column(db.String(80), unique=True, nullable=False)
-    owner_name = db.Column(db.String(100), nullable=False)
-    phone = db.Column(db.String(20), nullable=False)
+    slug = db.Column(db.String(80), unique=True, nullable=True)
+    owner_name = db.Column(db.String(100), nullable=True)
+    phone = db.Column(db.String(20), nullable=True)
     status = db.Column(db.String(20), default='active')
     wallet_balance = db.Column(db.Float, default=0.0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -22,7 +22,27 @@ class Shop(db.Model):
     transactions = db.relationship('Transaction', backref='shop', cascade="all, delete-orphan", lazy=True)
     print_jobs = db.relationship('PrintJob', backref='shop', cascade="all, delete-orphan", lazy=True)
 
-    # Boolean is_active helper for compatibility
+    def __init__(self, **kwargs):
+        # Handle aliases: shop_name -> name
+        if 'shop_name' in kwargs and 'name' not in kwargs:
+            kwargs['name'] = kwargs.pop('shop_name')
+        elif 'center_name' in kwargs and 'name' not in kwargs:
+            kwargs['name'] = kwargs.pop('center_name')
+        
+        # Default slug if not provided
+        if 'name' in kwargs and 'slug' not in kwargs:
+            kwargs['slug'] = kwargs['name'].lower().replace(' ', '-')
+            
+        super().__init__(**kwargs)
+
+    @property
+    def shop_name(self):
+        return self.name
+
+    @shop_name.setter
+    def shop_name(self, value):
+        self.name = value
+
     @property
     def is_active(self):
         return self.status == 'active'
