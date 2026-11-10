@@ -14,6 +14,7 @@ class Shop(db.Model):
     wallet_balance = db.Column(db.Float, default=0.0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Relationships
     users = db.relationship('User', backref='shop', lazy=True)
     customers = db.relationship('Customer', backref='shop', cascade="all, delete-orphan", lazy=True)
     services = db.relationship('Service', backref='shop', cascade="all, delete-orphan", lazy=True)
@@ -33,7 +34,15 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     shop_id = db.Column(db.Integer, db.ForeignKey('shops.id'), nullable=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey('shops.id'), nullable=True)
+
+    # Compatibility: tenant_id points directly to shop_id
+    @property
+    def tenant_id(self):
+        return self.shop_id
+
+    @tenant_id.setter
+    def tenant_id(self, val):
+        self.shop_id = val
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
