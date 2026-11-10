@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Expense Manager</h2>
+    <p>Track rent, electricity, printer cartridges, Xerox paper bundles, and daily expenses.</p>
+</div>
+
+<div class="form-row" style="margin-bottom: 2rem;">
+    <div class="auth-card" style="margin: 0; max-width: 100%; flex: 1;">
+        <h3>Record New Expense</h3>
+        <form method="POST" action="/shop/expenses" style="margin-top: 1rem;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Expense Particulars *</label>
+                    <input type="text" name="expense_title" placeholder="e.g. 5x A4 Paper Ream or Toner Refill" required>
+                </div>
+                <div class="form-group">
+                    <label>Amount (₹) *</label>
+                    <input type="number" step="0.5" name="amount" placeholder="e.g. 450.00" required>
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select name="payment_mode" style="width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                        <option value="CASH">Cash</option>
+                        <option value="UPI">UPI / Online</option>
+                        <option value="CARD">Card / NetBanking</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Notes / Voucher Details (Optional)</label>
+                <input type="text" name="notes" placeholder="e.g. Bill paid to local vendor">
+            </div>
+            <button type="submit" class="btn-primary" style="background: #ef4444;">- Save Expense</button>
+        </form>
+    </div>
+</div>
+
+<div class="table-container">
+    <h3>Expense Ledger History</h3>
+    <table class="data-table" style="margin-top: 1rem;">
+        <thead>
+            <tr>
+                <th>Voucher No</th>
+                <th>Particulars</th>
+                <th>Amount (₹)</th>
+                <th>Mode</th>
+                <th>Date</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in expenses %}
+            <tr>
+                <td><strong>{{ e.receipt_no }}</strong></td>
+                <td>{{ e.service_type }}</td>
+                <td style="color: #ef4444; font-weight: 600;">₹{{ "%.2f"|format(e.amount) }}</td>
+                <td><span class="badge badge-warning">{{ e.payment_mode }}</span></td>
+                <td>{{ e.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
+                <td>{{ e.notes or '-' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; color: #64748b;">No expenses recorded yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

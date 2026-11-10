@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Exam Cut-Off Age Calculator</h2>
+    <p>Calculate exact candidate age on the notification cut-off date.</p>
+</div>
+
+<div class="auth-card auth-card-wide" style="margin: 0 auto;">
+    <form method="POST" action="/shop/tools/age-calculator">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Date of Birth (DOB) *</label>
+                <input type="date" name="dob" required>
+            </div>
+            <div class="form-group">
+                <label>Age As On (Cut-off Date) *</label>
+                <input type="date" name="as_on" value="{{ result.as_on if result else '' }}">
+            </div>
+        </div>
+        <button type="submit" class="btn-primary w-100" style="background: #f59e0b;">Calculate Exact Age</button>
+    </form>
+
+    {% if result %}
+    <div style="margin-top: 2rem; padding: 1.25rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <h3 style="margin-bottom: 0.75rem; color: #0f172a;">Calculation Result:</h3>
+        <p style="font-size: 1.2rem; font-weight: 700; color: #2563eb; margin-bottom: 0.5rem;">
+            {{ result.years }} Years, {{ result.months }} Months, {{ result.days }} Days
+        </p>
+        <p style="font-size: 0.9rem; color: #64748b;">
+            Total days lived: <strong>{{ result.total_days }}</strong> days.
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

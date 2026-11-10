@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-card auth-card-wide">
+    <h2>Register New CSC / Pragya Kendra</h2>
+    <p>Submit center details for admin verification and multi-tenant onboarding.</p>
+    <form method="POST" action="/auth/register">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="shop_code">Center Code (Unique)</label>
+                <input type="text" id="shop_code" name="shop_code" placeholder="e.g. CSC-RNC-01" required>
+            </div>
+            <div class="form-group">
+                <label for="shop_name">Center / Shop Name</label>
+                <input type="text" id="shop_name" name="shop_name" placeholder="e.g. Smart Pragya Kendra" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="owner_name">Owner Name</label>
+                <input type="text" id="owner_name" name="owner_name" placeholder="Full Name" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Mobile Number</label>
+                <input type="text" id="phone" name="phone" placeholder="10-digit Mobile" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="name@domain.com" required>
+            </div>
+            <div class="form-group">
+                <label for="username">Portal Username</label>
+                <input type="text" id="username" name="username" placeholder="Login username" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="address">Center Address / Location</label>
+            <input type="text" id="address" name="address" placeholder="Market, Village/Town, District" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Create Login Password</label>
+            <input type="password" id="password" name="password" placeholder="Create strong password" required>
+        </div>
+        <button type="submit" class="btn-primary w-100">Submit Application</button>
+    </form>
+    <div class="auth-footer">
+        <p>Already approved? <a href="/auth/login">Login to Center</a></p>
+    </div>
+</div>
+{% endblock %}

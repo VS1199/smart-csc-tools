@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Customer Management</h2>
+    <p>Add and view all registered customers for your center.</p>
+</div>
+
+<div class="form-row" style="margin-bottom: 2rem;">
+    <div class="auth-card" style="margin: 0; max-width: 100%; flex: 1;">
+        <h3>Add New Customer</h3>
+        <form method="POST" action="/shop/customers" style="margin-top: 1rem;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Customer Name *</label>
+                    <input type="text" name="name" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number *</label>
+                    <input type="text" name="phone" placeholder="10-digit Mobile" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Email (Optional)</label>
+                    <input type="email" name="email" placeholder="customer@domain.com">
+                </div>
+                <div class="form-group">
+                    <label>Safe Reference (Optional)</label>
+                    <input type="text" name="masked_id" placeholder="e.g. Ref-8910">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Address / Village</label>
+                <input type="text" name="address" placeholder="Address">
+            </div>
+            <button type="submit" class="btn-primary">+ Save Customer</button>
+        </form>
+    </div>
+</div>
+
+<div class="table-container">
+    <h3>Registered Customers Directory</h3>
+    <table class="data-table" style="margin-top: 1rem;">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Reference</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in customers %}
+            <tr>
+                <td><strong>{{ c.name }}</strong></td>
+                <td>{{ c.phone }}</td>
+                <td>{{ c.email or '-' }}</td>
+                <td>{{ c.address or '-' }}</td>
+                <td>{{ c.masked_id_reference or '-' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center; color: #64748b;">No customers added yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

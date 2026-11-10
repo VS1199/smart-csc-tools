@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h2>Live Print Orders Queue</h2>
+        <p>Direct uploads received from counter QR scans.</p>
+    </div>
+    <div>
+        <a href="/shop/dashboard" class="btn-primary" style="background: #475569;">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Order Code</th>
+                <th>Customer</th>
+                <th>Phone</th>
+                <th>File</th>
+                <th>Specs</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for j in jobs %}
+            <tr>
+                <td><strong style="color: #2563eb;">{{ j.order_code }}</strong></td>
+                <td>{{ j.customer_name }}</td>
+                <td>{{ j.customer_phone }}</td>
+                <td>
+                    <a href="/shop/print-queue/download/{{ j.id }}" class="action-btn approve" style="background: #0284c7;">
+                        📥 Download File
+                    </a>
+                </td>
+                <td>{{ j.copies }}x ({{ j.color_type }})</td>
+                <td>
+                    {% if j.status == 'PENDING' %}
+                        <span class="badge badge-warning">Pending</span>
+                    {% elif j.status == 'PRINTED' %}
+                        <span class="badge" style="background: #e0f2fe; color: #0369a1;">Printed</span>
+                    {% elif j.status == 'DELIVERED' %}
+                        <span class="badge badge-success">Delivered</span>
+                    {% else %}
+                        <span class="badge" style="background: #fee2e2; color: #b91c1c;">Cancelled</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if j.status == 'PENDING' %}
+                        <a href="/shop/print-queue/status/{{ j.id }}/PRINTED" class="action-btn approve" style="margin-right: 4px;">Mark Printed</a>
+                    {% elif j.status == 'PRINTED' %}
+                        <a href="/shop/print-queue/status/{{ j.id }}/DELIVERED" class="action-btn approve" style="background: #059669;">Deliver</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center; color: #64748b; padding: 2rem;">No print orders in queue. Customer uploads will appear here in real-time.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

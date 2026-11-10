@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-header">
+    <h2>CSC & Pragya Kendra Utility Hub</h2>
+    <p>Fast offline/online tools tailored for job applications and center workflow.</p>
+</div>
+<div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+    <div class="stat-card">
+        <h3>Photo & Sign Resizer</h3>
+        <p style="margin: 0.5rem 0 1rem; color: #64748b;">Compress photos and signatures to 20KB/50KB.</p>
+        <a href="/shop/tools/image-resizer" class="btn-primary" style="font-size: 0.85rem;">Open Tool</a>
+    </div>
+    <div class="stat-card success">
+        <h3>QR Code Generator</h3>
+        <p style="margin: 0.5rem 0 1rem; color: #64748b;">Generate printable PNG QR codes for shop UPI.</p>
+        <a href="/shop/tools/qr-generator" class="btn-primary" style="background: #10b981; font-size: 0.85rem;">Open Tool</a>
+    </div>
+    <div class="stat-card warning">
+        <h3>Exam Age Calculator</h3>
+        <p style="margin: 0.5rem 0 1rem; color: #64748b;">Calculate exact age for recruitment cut-off dates.</p>
+        <a href="/shop/tools/age-calculator" class="btn-primary" style="background: #f59e0b; font-size: 0.85rem;">Open Tool</a>
+    </div>
+</div>
+{% endblock %}

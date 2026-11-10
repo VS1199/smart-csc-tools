@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-card" style="margin: 0 auto; max-width: 450px; text-align: center;">
+    <div style="font-size: 3rem; margin-bottom: 0.5rem;">✅</div>
+    <h2>Document Received!</h2>
+    <p style="color: #64748b; margin-bottom: 1.5rem;">Please share this Order Code with the counter operator.</p>
+
+    <div style="background: #f1f5f9; padding: 1.25rem; border-radius: 8px; margin-bottom: 1.5rem; border: 2px dashed #94a3b8;">
+        <span style="font-size: 0.85rem; color: #64748b; text-transform: uppercase; font-weight: bold;">Your Order Code</span>
+        <h1 style="color: #2563eb; font-size: 2.2rem; letter-spacing: 2px; margin: 0.25rem 0;">{{ job.order_code }}</h1>
+        <p style="font-size: 0.9rem; margin-top: 0.25rem;">{{ job.copies }} Copy ({{ job.color_type }}) | Approx. ₹{{ "%.2f"|format(job.total_amount) }}</p>
+    </div>
+
+    <p style="font-size: 0.85rem; color: #475569;">Operator: <strong>{{ shop.shop_name }}</strong></p>
+    <p style="font-size: 0.85rem; color: #64748b;">Phone: {{ shop.phone }}</p>
+</div>
+{% endblock %}

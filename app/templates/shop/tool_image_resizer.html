@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Photo & Signature Resizer</h2>
+    <p>Crop, resize and compress images to match SSC, Railway, UPSC, and State exam portal requirements.</p>
+</div>
+
+<div class="auth-card auth-card-wide" style="margin: 0 auto;">
+    <form method="POST" action="/shop/tools/image-resizer" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Select Image (JPG/PNG) *</label>
+            <input type="file" name="image" accept="image/*" required style="padding: 0.5rem;">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Format Preset</label>
+                <select name="preset" style="width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    <option value="photo">Passport Photo (350 x 450 px)</option>
+                    <option value="signature">Signature (300 x 120 px)</option>
+                    <option value="post_card">Postcard Size (400 x 600 px)</option>
+                    <option value="custom">Keep Original Ratio (Compress only)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Max Target File Size (KB)</label>
+                <input type="number" name="target_kb" placeholder="e.g. 50 (or 20 for signature)" value="50">
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary w-100">Resize & Download Image</button>
+    </form>
+    <div style="margin-top: 1.5rem; font-size: 0.85rem; color: #64748b;">
+        <p><strong>Common specifications:</strong></p>
+        <p>• Passport Photos: Usually 20KB – 50KB.</p>
+        <p>• Signatures: Usually 10KB – 20KB.</p>
+    </div>
+</div>
+{% endblock %}

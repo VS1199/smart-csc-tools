@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart CSC Tools{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="brand-logo">Smart CSC <span>Tools</span></a>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role == 'superadmin' %}
+                        <a href="/superadmin/dashboard">Admin Panel</a>
+                    {% else %}
+                        <a href="/shop/dashboard">My Center</a>
+                        <a href="/shop/tools/">CSC Tools</a>
+                    {% endif %}
+                    <a href="/auth/logout" class="btn-logout">Logout ({{ current_user.username }})</a>
+                {% else %}
+                    <a href="/auth/register">Register Center</a>
+                    <a href="/auth/login" class="btn-login">Login</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <div class="container message-box">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <main class="main-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Smart CSC Tools. All Rights Reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

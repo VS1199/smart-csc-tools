@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Instant QR Code Generator</h2>
+    <p>Generate high-quality QR codes for your shop counter, UPI links, or WhatsApp links.</p>
+</div>
+
+<div class="auth-card" style="margin: 0 auto;">
+    <form method="POST" action="/shop/tools/qr-generator">
+        <div class="form-group">
+            <label>Text, Link, or UPI Payment String *</label>
+            <textarea name="qr_data" rows="4" placeholder="e.g. https://yoursite.com or upi://pay?pa=yourupi@bank" required style="width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit;"></textarea>
+        </div>
+        <button type="submit" class="btn-primary w-100" style="background: #10b981;">Download High-Res QR (PNG)</button>
+    </form>
+</div>
+{% endblock %}

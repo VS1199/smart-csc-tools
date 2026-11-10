@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h2>Business Accounts & P&L Statement</h2>
+        <p>Complete financial audit ledger with multi-tenant isolation.</p>
+    </div>
+    <div>
+        <a href="/shop/reports/export-excel" class="btn-primary" style="background: #059669;">📥 Download Excel Ledger</a>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>₹{{ "%.2f"|format(total_income) }}</h3>
+        <p>Total Revenue (Gross Inflow)</p>
+    </div>
+    <div class="stat-card danger">
+        <h3>₹{{ "%.2f"|format(total_expense) }}</h3>
+        <p>Total Expenses (Outflow)</p>
+    </div>
+    <div class="stat-card success">
+        <h3>₹{{ "%.2f"|format(net_profit) }}</h3>
+        <p>Net In-Hand Profit</p>
+    </div>
+</div>
+
+<div class="table-container">
+    <h3>Complete Cash Flow Ledger</h3>
+    <table class="data-table" style="margin-top: 1rem;">
+        <thead>
+            <tr>
+                <th>Reference No</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Amount (₹)</th>
+                <th>Mode</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in transactions %}
+            <tr>
+                <td><strong>{{ t.receipt_no }}</strong></td>
+                <td>
+                    {% if t.txn_type == 'INCOME' %}
+                        <span class="badge badge-success">Income</span>
+                    {% else %}
+                        <span class="badge" style="background: #fee2e2; color: #b91c1c;">Expense</span>
+                    {% endif %}
+                </td>
+                <td>{{ t.service_type }}</td>
+                <td style="font-weight: 700; color: {{ '#15803d' if t.txn_type == 'INCOME' else '#b91c1c' }};">
+                    {{ '+' if t.txn_type == 'INCOME' else '-' }}₹{{ "%.2f"|format(t.amount) }}
+                </td>
+                <td>{{ t.payment_mode }}</td>
+                <td>{{ t.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; color: #64748b;">No transactions recorded.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

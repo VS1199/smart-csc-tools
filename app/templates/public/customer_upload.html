@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-card" style="margin: 0 auto; max-width: 520px;">
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+        <span class="badge badge-success" style="font-size: 0.85rem;">{{ shop.shop_code }}</span>
+        <h2 style="margin-top: 0.5rem;">{{ shop.shop_name }}</h2>
+        <p style="color: #64748b; font-size: 0.9rem;">Send documents directly to operator printer</p>
+    </div>
+
+    <form method="POST" action="/print/{{ shop.shop_code }}" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Your Name *</label>
+            <input type="text" name="customer_name" placeholder="Enter Full Name" required>
+        </div>
+
+        <div class="form-group">
+            <label>Mobile Number *</label>
+            <input type="tel" name="customer_phone" placeholder="10-digit Mobile" required>
+        </div>
+
+        <div class="form-group">
+            <label>Choose File (PDF or Photo) *</label>
+            <input type="file" name="document" accept=".pdf,.jpg,.jpeg,.png,.docx" required style="padding: 0.5rem;">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Copies</label>
+                <input type="number" name="copies" value="1" min="1" max="100" required>
+            </div>
+            <div class="form-group">
+                <label>Print Type</label>
+                <select name="color_type" style="width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    <option value="BW">Black & White (₹3)</option>
+                    <option value="COLOR">Full Color (₹10)</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary w-100" style="padding: 0.8rem; font-size: 1rem; margin-top: 0.5rem;">
+            📤 Send File to Counter Printer
+        </button>
+    </form>
+</div>
+{% endblock %}

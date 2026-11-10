@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Receipt - {{ txn.receipt_no }}</title>
+    <style>
+        body { font-family: monospace, sans-serif; background: #f1f5f9; padding: 20px; }
+        .receipt-card {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 24px;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .header { text-align: center; border-bottom: 2px dashed #64748b; padding-bottom: 12px; margin-bottom: 12px; }
+        .header h2 { margin: 0; font-size: 1.4rem; }
+        .header p { margin: 4px 0; font-size: 0.85rem; color: #475569; }
+        .row { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px; }
+        .divider { border-top: 1px dashed #cbd5e1; margin: 12px 0; }
+        .total { font-size: 1.15rem; font-weight: bold; border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 8px 0; }
+        .actions { text-align: center; margin-top: 20px; }
+        .btn { padding: 8px 16px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 4px; font-weight: bold; cursor: pointer; border: none; }
+        @media print {
+            body { background: #fff; padding: 0; }
+            .receipt-card { border: none; box-shadow: none; width: 100%; max-width: 100%; }
+            .actions { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-card">
+        <div class="header">
+            <h2>{{ shop.shop_name }}</h2>
+            <p>Center Code: {{ shop.shop_code }}</p>
+            <p>{{ shop.address }}</p>
+            <p>Phone: {{ shop.phone }}</p>
+        </div>
+
+        <div class="row"><span>Receipt No:</span><strong>{{ txn.receipt_no }}</strong></div>
+        <div class="row"><span>Date:</span><span>{{ txn.created_at.strftime('%d-%m-%Y %I:%M %p') }}</span></div>
+        {% if txn.customer %}
+            <div class="row"><span>Customer:</span><span>{{ txn.customer.name }} ({{ txn.customer.phone }})</span></div>
+        {% else %}
+            <div class="row"><span>Customer:</span><span>Walk-in Customer</span></div>
+        {% endif %}
+        
+        <div class="divider"></div>
+
+        <div class="row">
+            <span><strong>Description</strong></span>
+            <span><strong>Amount</strong></span>
+        </div>
+        <div class="row">
+            <span>{{ txn.service_type }}</span>
+            <span>₹{{ "%.2f"|format(txn.amount) }}</span>
+        </div>
+
+        {% if txn.notes %}
+            <p style="font-size: 0.8rem; color: #64748b; margin: 6px 0;">Note: {{ txn.notes }}</p>
+        {% endif %}
+
+        <div class="row total">
+            <span>TOTAL PAID:</span>
+            <span>₹{{ "%.2f"|format(txn.amount) }}</span>
+        </div>
+
+        <div class="row" style="margin-top: 10px;">
+            <span>Payment Mode:</span>
+            <span><strong>{{ txn.payment_mode }}</strong></span>
+        </div>
+        <div class="row">
+            <span>Payment Status:</span>
+            <span><strong>{{ txn.payment_status }}</strong></span>
+        </div>
+
+        <div class="divider"></div>
+        <p style="text-align: center; font-size: 0.8rem; color: #64748b;">Thank you for visiting! For queries, contact {{ shop.phone }}.</p>
+    </div>
+
+    <div class="actions">
+        <button onclick="window.print()" class="btn">🖨️ Print Receipt</button>
+        <a href="/shop/dashboard" style="margin-left: 10px; font-size: 0.9rem; color: #475569;">Back to Dashboard</a>
+    </div>
+</body>
+</html>

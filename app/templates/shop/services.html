@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Service Catalog & Pricing</h2>
+    <p>Set custom prices for PAN, Online Forms, Xerox, Certifications, etc.</p>
+</div>
+
+<div class="form-row" style="margin-bottom: 2rem;">
+    <div class="auth-card" style="margin: 0; max-width: 100%; flex: 1;">
+        <h3>Add Service to Rate List</h3>
+        <form method="POST" action="/shop/services" style="margin-top: 1rem;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Service Name *</label>
+                    <input type="text" name="service_name" placeholder="e.g. New PAN Application" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select name="category" style="width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                        <option value="Online Forms">Online Forms</option>
+                        <option value="PAN Service">PAN Service</option>
+                        <option value="Certificates">Certificates (Caste/Income/Birth)</option>
+                        <option value="Print/Xerox">Print & Xerox</option>
+                        <option value="Bill Payment">Bill Payment</option>
+                        <option value="Other">Other Custom Service</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Default Price (₹) *</label>
+                    <input type="number" step="0.5" name="price" placeholder="100.00" required>
+                </div>
+            </div>
+            <button type="submit" class="btn-primary">+ Add Service</button>
+        </form>
+    </div>
+</div>
+
+<div class="table-container">
+    <h3>Active Services & Rates</h3>
+    <table class="data-table" style="margin-top: 1rem;">
+        <thead>
+            <tr>
+                <th>Service Name</th>
+                <th>Category</th>
+                <th>Rate (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in services %}
+            <tr>
+                <td><strong>{{ s.service_name }}</strong></td>
+                <td><span class="badge badge-warning">{{ s.category }}</span></td>
+                <td>₹{{ "%.2f"|format(s.default_price) }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" style="text-align: center; color: #64748b;">No services added yet. Add services above for faster billing.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

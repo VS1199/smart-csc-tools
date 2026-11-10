@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Super Admin Control Panel</h2>
+    <p>Manage all multi-tenant CSC Centers, approvals, and system state.</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>{{ total_centers }}</h3>
+        <p>Total Registered Centers</p>
+    </div>
+    <div class="stat-card success">
+        <h3>{{ active_centers }}</h3>
+        <p>Active Centers</p>
+    </div>
+    <div class="stat-card warning">
+        <h3>{{ pending_centers }}</h3>
+        <p>Pending Approvals</p>
+    </div>
+</div>
+
+<div class="table-container">
+    <h3 style="margin-bottom: 1rem;">Registered Centers Directory</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Center Code</th>
+                <th>Center Name</th>
+                <th>Owner</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in shops %}
+            <tr>
+                <td><strong>{{ s.shop_code }}</strong></td>
+                <td>{{ s.shop_name }}</td>
+                <td>{{ s.owner_name }}</td>
+                <td>{{ s.phone }}</td>
+                <td>
+                    {% if s.is_active %}
+                        <span class="badge badge-success">Active</span>
+                    {% else %}
+                        <span class="badge badge-warning">Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not s.is_active %}
+                        <a href="/superadmin/shop/approve/{{ s.id }}" class="action-btn approve">Approve</a>
+                    {% else %}
+                        <a href="/superadmin/shop/reject/{{ s.id }}" class="action-btn reject">Deactivate</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; color: #64748b;">No CSC centers registered yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
