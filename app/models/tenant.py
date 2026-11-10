@@ -11,6 +11,8 @@ class Shop(db.Model):
     slug = db.Column(db.String(80), unique=True, nullable=True)
     owner_name = db.Column(db.String(100), nullable=True)
     phone = db.Column(db.String(20), nullable=True)
+    email = db.Column(db.String(120), nullable=True)
+    address = db.Column(db.String(255), nullable=True)
     status = db.Column(db.String(20), default='active')
     wallet_balance = db.Column(db.Float, default=0.0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -23,17 +25,22 @@ class Shop(db.Model):
     print_jobs = db.relationship('PrintJob', backref='shop', cascade="all, delete-orphan", lazy=True)
 
     def __init__(self, **kwargs):
-        # Handle aliases: shop_name -> name
-        if 'shop_name' in kwargs and 'name' not in kwargs:
-            kwargs['name'] = kwargs.pop('shop_name')
-        elif 'center_name' in kwargs and 'name' not in kwargs:
-            kwargs['name'] = kwargs.pop('center_name')
+        # Flexible handling for any form parameter name
+        name_val = kwargs.pop('shop_name', None) or kwargs.pop('center_name', None) or kwargs.get('name')
+        if name_val:
+            kwargs['name'] = name_val
         
-        # Default slug if not provided
-        if 'name' in kwargs and 'slug' not in kwargs:
+        owner_val = kwargs.pop('vle_name', None) or kwargs.get('owner_name')
+        if owner_val:
+            kwargs['owner_name'] = owner_val
+
+        if 'slug' not in kwargs and 'name' in kwargs and kwargs['name']:
             kwargs['slug'] = kwargs['name'].lower().replace(' ', '-')
-            
-        super().__init__(**kwargs)
+
+        # Only set fields that exist as table columns
+        valid_cols = {c.name for c in self.__table__.columns}
+        filtered_kwargs = {k: v for k, v in kwargs.items() if k in valid_cols}
+        super().__init__(**filtered_kwargs)
 
     @property
     def shop_name(self):
@@ -51,7 +58,6 @@ class Shop(db.Model):
     def is_active(self, val):
         self.status = 'active' if val else 'suspended'
 
-# Compatibility alias
 Tenant = Shop
 
 class User(UserMixin, db.Model):
@@ -65,6 +71,11 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     shop_id = db.Column(db.Integer, db.ForeignKey('shops.id'), nullable=True)
+
+    def __init__(self, **kwargs):
+        valid_cols = {c.name for c in self.__table__.columns}
+        filtered_kwargs = {k: v for k, v in kwargs.items() if k in valid_cols}
+        super().__init__(**filtered_kwargs)
 
     @property
     def tenant_id(self):
