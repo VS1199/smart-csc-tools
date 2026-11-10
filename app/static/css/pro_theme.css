@@ -59,7 +59,7 @@ body.pro-theme {
   transform: translateY(-4px);
 }
 
-/* 3D Glowing Action Cards (What We Do Style) */
+/* 3D Glowing Action Cards */
 .glass-service-card {
   background: var(--glass-card);
   backdrop-filter: blur(20px);
